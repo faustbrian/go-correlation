@@ -10,7 +10,7 @@ github.com/faustbrian/go-identifier v1.0.0 h1:I5KXiayB3e363Iim1rfF2ZbtxOt3HMN9zO
 github.com/faustbrian/go-identifier v1.0.0/go.mod h1:Q2yS7Hk4N4i9Wd3OmPQGh657SHtA1IjvtT4PllphNlY=
 github.com/faustbrian/go-log v1.0.0 h1:UZ9I/gG3o2J+7I0YyAFbQ9CcG2ASxLlrSwzai6AsDCo=
 github.com/faustbrian/go-log v1.0.0/go.mod h1:hwFD9uvNXWat2MF855ncxF4opNWHjhsErO/mE6SUN6E=
-github.com/faustbrian/go-telemetry v1.0.0 h1:F3vn8KfG/vC/4rIlaUIB9QO+Lzty4rPA5+DFLqIDO5s=
+github.com/faustbrian/go-telemetry v1.0.0 h1:5tFa93Y/5LPR7GYHh0wZbVmJg7tU77+PjT/JC2vgoOk=
 github.com/faustbrian/go-telemetry v1.0.0/go.mod h1:3bs4hcIGr0FS11ZLPmnPc+Hy56zHGCJjhxtUxp/sozU=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
 github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
