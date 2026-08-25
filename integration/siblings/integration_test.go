@@ -8,13 +8,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	"github.com/faustbrian/golib/pkg/correlation/http/requestidbridge"
-	correlationlog "github.com/faustbrian/golib/pkg/correlation/log"
-	correlationtelemetry "github.com/faustbrian/golib/pkg/correlation/telemetry"
-	"github.com/faustbrian/golib/pkg/http-middleware/requestid"
-	golog "github.com/faustbrian/golib/pkg/log"
-	"github.com/faustbrian/golib/pkg/telemetry/testtelemetry"
+	correlation "github.com/faustbrian/go-correlation"
+	"github.com/faustbrian/go-correlation/http/requestidbridge"
+	correlationlog "github.com/faustbrian/go-correlation/log"
+	correlationtelemetry "github.com/faustbrian/go-correlation/telemetry"
+	"github.com/faustbrian/go-http-middleware/requestid"
+	golog "github.com/faustbrian/go-log"
+	"github.com/faustbrian/go-telemetry/testtelemetry"
 	"go.opentelemetry.io/otel/trace"
 )
 

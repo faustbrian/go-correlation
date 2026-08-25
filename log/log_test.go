@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	correlationlog "github.com/faustbrian/golib/pkg/correlation/log"
+	correlation "github.com/faustbrian/go-correlation"
+	correlationlog "github.com/faustbrian/go-correlation/log"
 )
 
 func TestAttrsRequireExplicitDisclosure(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	jsonrpccorrelation "github.com/faustbrian/golib/pkg/correlation/jsonrpc"
+	correlation "github.com/faustbrian/go-correlation"
+	jsonrpccorrelation "github.com/faustbrian/go-correlation/jsonrpc"
 )
 
 type generator struct{ values []string }

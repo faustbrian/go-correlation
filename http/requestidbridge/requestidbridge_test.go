@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	"github.com/faustbrian/golib/pkg/correlation/http/requestidbridge"
+	correlation "github.com/faustbrian/go-correlation"
+	"github.com/faustbrian/go-correlation/http/requestidbridge"
 )
 
 func nilContext() context.Context { return nil }

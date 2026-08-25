@@ -1,6 +1,9 @@
-# Code of conduct
+# Code Of Conduct
 
-Be respectful, constructive, and focused on the work. Harassment,
-discrimination, threats, and disclosure of private information are not
-acceptable. Maintainers may remove abusive content or participation. Report
-conduct concerns privately to the maintainers.
+Participants must communicate professionally, assume good intent while
+evaluating technical claims from evidence, and avoid harassment, discrimination,
+personal attacks, threats, or disclosure of private information.
+
+Maintainers may edit, reject, or remove contributions and participation that
+violate these expectations. Report conduct concerns privately to the repository
+owner. Reports will be reviewed confidentially and addressed proportionally.

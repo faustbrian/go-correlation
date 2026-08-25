@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 type benchmarkGenerator uint64

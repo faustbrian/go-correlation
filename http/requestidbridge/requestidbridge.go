@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 var (

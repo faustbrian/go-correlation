@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	httpcorrelation "github.com/faustbrian/golib/pkg/correlation/http"
-	webhookcorrelation "github.com/faustbrian/golib/pkg/correlation/webhook"
+	correlation "github.com/faustbrian/go-correlation"
+	httpcorrelation "github.com/faustbrian/go-correlation/http"
+	webhookcorrelation "github.com/faustbrian/go-correlation/webhook"
 )
 
 type generator struct{ values []string }

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-correlation",
+  "packages": [
+    {
+      "module_directory": ".",
+      "directory": ".",
+      "name": "correlation",
+      "import_path": "github.com/faustbrian/go-correlation",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "http",
+      "name": "httpcorrelation",
+      "import_path": "github.com/faustbrian/go-correlation/http",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "http/requestidbridge",
+      "name": "requestidbridge",
+      "import_path": "github.com/faustbrian/go-correlation/http/requestidbridge",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "jsonrpc",
+      "name": "jsonrpc",
+      "import_path": "github.com/faustbrian/go-correlation/jsonrpc",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "log",
+      "name": "log",
+      "import_path": "github.com/faustbrian/go-correlation/log",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "queue",
+      "name": "queue",
+      "import_path": "github.com/faustbrian/go-correlation/queue",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "schedule",
+      "name": "schedule",
+      "import_path": "github.com/faustbrian/go-correlation/schedule",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "telemetry",
+      "name": "telemetry",
+      "import_path": "github.com/faustbrian/go-correlation/telemetry",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "webhook",
+      "name": "webhook",
+      "import_path": "github.com/faustbrian/go-correlation/webhook",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    }
+  ]
+}

@@ -5,7 +5,7 @@ package telemetry
 import (
 	"errors"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )

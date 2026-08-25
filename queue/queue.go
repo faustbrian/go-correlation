@@ -5,7 +5,7 @@ package queue
 import (
 	"errors"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 // ErrInvalidOptions reports invalid queue propagation configuration.

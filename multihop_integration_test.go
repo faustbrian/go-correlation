@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	httpcorrelation "github.com/faustbrian/golib/pkg/correlation/http"
-	jsonrpccorrelation "github.com/faustbrian/golib/pkg/correlation/jsonrpc"
-	queuecorrelation "github.com/faustbrian/golib/pkg/correlation/queue"
-	schedulecorrelation "github.com/faustbrian/golib/pkg/correlation/schedule"
-	webhookcorrelation "github.com/faustbrian/golib/pkg/correlation/webhook"
+	correlation "github.com/faustbrian/go-correlation"
+	httpcorrelation "github.com/faustbrian/go-correlation/http"
+	jsonrpccorrelation "github.com/faustbrian/go-correlation/jsonrpc"
+	queuecorrelation "github.com/faustbrian/go-correlation/queue"
+	schedulecorrelation "github.com/faustbrian/go-correlation/schedule"
+	webhookcorrelation "github.com/faustbrian/go-correlation/webhook"
 )
 
 func TestTrackHTTPQueueWebhookChainRetainsDistinctSemantics(t *testing.T) {

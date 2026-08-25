@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	identifieruuid "github.com/faustbrian/golib/pkg/identifier/uuid"
+	identifieruuid "github.com/faustbrian/go-identifier/uuid"
 )
 
 type edgeCarrier map[string][]string

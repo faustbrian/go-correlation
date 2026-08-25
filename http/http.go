@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 const (

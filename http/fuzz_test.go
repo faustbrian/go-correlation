@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	httpcorrelation "github.com/faustbrian/golib/pkg/correlation/http"
+	correlation "github.com/faustbrian/go-correlation"
+	httpcorrelation "github.com/faustbrian/go-correlation/http"
 )
 
 func FuzzInboundHeaders(fuzz *testing.F) {

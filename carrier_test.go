@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 type memoryCarrier map[string][]string

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 type foreignKey struct{}

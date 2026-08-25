@@ -1,18 +1,18 @@
-module github.com/faustbrian/golib/pkg/correlation/integration/siblings
+module github.com/faustbrian/go-correlation/integration/siblings
 
 go 1.26.6
 
 require (
-	github.com/faustbrian/golib/pkg/correlation v0.0.0
-	github.com/faustbrian/golib/pkg/http-middleware v0.0.0
-	github.com/faustbrian/golib/pkg/log v0.0.0
-	github.com/faustbrian/golib/pkg/telemetry v0.0.0
+	github.com/faustbrian/go-correlation v1.0.0
+	github.com/faustbrian/go-http-middleware v1.0.0
+	github.com/faustbrian/go-log v1.0.0
+	github.com/faustbrian/go-telemetry v1.0.0
 	go.opentelemetry.io/otel/trace v1.44.0
 )
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/faustbrian/golib/pkg/identifier v0.0.0 // indirect
+	github.com/faustbrian/go-identifier v1.0.0 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

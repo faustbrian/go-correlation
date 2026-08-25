@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	queuecorrelation "github.com/faustbrian/golib/pkg/correlation/queue"
+	correlation "github.com/faustbrian/go-correlation"
+	queuecorrelation "github.com/faustbrian/go-correlation/queue"
 )
 
 type generator struct{ values []string }

@@ -1,5 +1,5 @@
-PACKAGE github.com/faustbrian/golib/pkg/correlation
-package correlation // import "github.com/faustbrian/golib/pkg/correlation"
+PACKAGE github.com/faustbrian/go-correlation
+package correlation // import "github.com/faustbrian/go-correlation"
 
 Package correlation provides transport-neutral correlation, request, and
 causation identifiers. Identifiers are diagnostic metadata only; they are never
@@ -267,8 +267,8 @@ type Values struct {
 func FromContext(ctx context.Context) (Values, bool)
     FromContext returns values installed by WithValues.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/http
-package httpcorrelation // import "github.com/faustbrian/golib/pkg/correlation/http"
+PACKAGE github.com/faustbrian/go-correlation/http
+package httpcorrelation // import "github.com/faustbrian/go-correlation/http"
 
 Package httpcorrelation explicitly propagates correlation metadata over HTTP.
 Middleware installation and proxy trust remain application owned.
@@ -323,8 +323,8 @@ type Options struct {
 }
     Options configure immutable HTTP propagation policy.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/http/requestidbridge
-package requestidbridge // import "github.com/faustbrian/golib/pkg/correlation/http/requestidbridge"
+PACKAGE github.com/faustbrian/go-correlation/http/requestidbridge
+package requestidbridge // import "github.com/faustbrian/go-correlation/http/requestidbridge"
 
 Package requestidbridge integrates explicitly with request ID middleware such as
 http-middleware/requestid without importing hidden context keys.
@@ -361,8 +361,8 @@ type Options struct {
 }
     Options require explicit trust for the middleware-owned context value.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/jsonrpc
-package jsonrpc // import "github.com/faustbrian/golib/pkg/correlation/jsonrpc"
+PACKAGE github.com/faustbrian/go-correlation/jsonrpc
+package jsonrpc // import "github.com/faustbrian/go-correlation/jsonrpc"
 
 Package jsonrpc propagates correlation through an explicit JSON-RPC metadata
 object. It never edits JSON-RPC protocol envelopes implicitly.
@@ -412,8 +412,8 @@ type Options struct {
 }
     Options configure JSON-RPC metadata validation and names.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/log
-package log // import "github.com/faustbrian/golib/pkg/correlation/log"
+PACKAGE github.com/faustbrian/go-correlation/log
+package log // import "github.com/faustbrian/go-correlation/log"
 
 Package log provides bounded slog attributes compatible with log's standard
 log/slog composition API.
@@ -424,8 +424,8 @@ func Attrs(values correlation.Values, policy correlation.DisclosurePolicy) ([]sl
     Attrs returns only non-empty identifier attributes under an explicit
     disclosure policy.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/queue
-package queue // import "github.com/faustbrian/golib/pkg/correlation/queue"
+PACKAGE github.com/faustbrian/go-correlation/queue
+package queue // import "github.com/faustbrian/go-correlation/queue"
 
 Package queue propagates correlation metadata through backend-neutral queue
 metadata maps. Each Receive call creates a distinct delivery-attempt ID.
@@ -458,8 +458,8 @@ type Options struct {
 }
     Options configure queue metadata validation and field names.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/schedule
-package schedule // import "github.com/faustbrian/golib/pkg/correlation/schedule"
+PACKAGE github.com/faustbrian/go-correlation/schedule
+package schedule // import "github.com/faustbrian/go-correlation/schedule"
 
 Package schedule provides explicit correlation lifecycle helpers for
 scheduled work. Independent invocations start independent workflows unless
@@ -496,8 +496,8 @@ type Options struct {
 }
     Options configure optional scheduled metadata propagation.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/telemetry
-package telemetry // import "github.com/faustbrian/golib/pkg/correlation/telemetry"
+PACKAGE github.com/faustbrian/go-correlation/telemetry
+package telemetry // import "github.com/faustbrian/go-correlation/telemetry"
 
 Package telemetry links correlation metadata to OpenTelemetry without treating
 correlation IDs as trace or span IDs.
@@ -522,8 +522,8 @@ func MetricAttributes(values correlation.Values) []attribute.KeyValue
     MetricAttributes exposes fixed-cardinality presence signals only. Raw,
     hashed, and deterministic business-derived identifiers are never included.
 
-PACKAGE github.com/faustbrian/golib/pkg/correlation/webhook
-package webhook // import "github.com/faustbrian/golib/pkg/correlation/webhook"
+PACKAGE github.com/faustbrian/go-correlation/webhook
+package webhook // import "github.com/faustbrian/go-correlation/webhook"
 
 Package webhook provides an explicit webhook-named HTTP correlation adapter.
 

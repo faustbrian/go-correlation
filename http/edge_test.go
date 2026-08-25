@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 type edgeGenerator struct {

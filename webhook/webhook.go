@@ -4,8 +4,8 @@ package webhook
 import (
 	"net/http"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	httpcorrelation "github.com/faustbrian/golib/pkg/correlation/http"
+	correlation "github.com/faustbrian/go-correlation"
+	httpcorrelation "github.com/faustbrian/go-correlation/http"
 )
 
 // Options configure webhook boundary trust and invalid input handling.

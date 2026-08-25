@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	identifieruuid "github.com/faustbrian/golib/pkg/identifier/uuid"
+	identifieruuid "github.com/faustbrian/go-identifier/uuid"
 )
 
 const defaultEntropyBufferSize = 4 << 10

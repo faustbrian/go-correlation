@@ -3,7 +3,7 @@ package correlation_test
 import (
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 func FuzzParseCorrelationID(fuzz *testing.F) {

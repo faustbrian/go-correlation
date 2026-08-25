@@ -5,7 +5,7 @@ package log
 import (
 	"log/slog"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 // Attrs returns only non-empty identifier attributes under an explicit

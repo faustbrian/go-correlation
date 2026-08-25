@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
+	correlation "github.com/faustbrian/go-correlation"
 )
 
 func TestDeterministicStrategyVectors(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	correlationtelemetry "github.com/faustbrian/golib/pkg/correlation/telemetry"
+	correlation "github.com/faustbrian/go-correlation"
+	correlationtelemetry "github.com/faustbrian/go-correlation/telemetry"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )

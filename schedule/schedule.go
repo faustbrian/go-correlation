@@ -6,8 +6,8 @@ package schedule
 import (
 	"errors"
 
-	correlation "github.com/faustbrian/golib/pkg/correlation"
-	queuecorrelation "github.com/faustbrian/golib/pkg/correlation/queue"
+	correlation "github.com/faustbrian/go-correlation"
+	queuecorrelation "github.com/faustbrian/go-correlation/queue"
 )
 
 // ErrInvalidOptions reports missing scheduled-work dependencies.
