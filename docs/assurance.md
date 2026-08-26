@@ -1,4 +1,4 @@
-# Hardening evidence
+# Assurance
 
 The release gate maps the security contract to executable evidence rather than
 using statement coverage as a substitute for behavior.

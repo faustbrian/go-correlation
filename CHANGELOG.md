@@ -24,10 +24,6 @@ versioning once released.
   link checks, package-specific documentation gates, and repository-local
   contributor guidance.
 
-### Documentation
-
-- Link the package README to the repository-wide Golib documentation portal.
-
 ### Fixed
 
 - Amortize system entropy reads through a bounded factory-owned buffer while

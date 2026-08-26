@@ -15,4 +15,4 @@
 - [FAQ](faq.md)
 - [Compatibility](compatibility.md)
 - [Verification](verification.md)
-- [Hardening evidence](hardening.md)
+- [Assurance](assurance.md)
