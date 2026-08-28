@@ -14,6 +14,6 @@ using statement coverage as a substitute for behavior.
 | Bounded parsing | Core codecs cap values at eight. HTTP stops collecting at the ninth value, and JSON-RPC rejects excess values and encoded identifiers before decoding. |
 | Test sensitivity | Mutation gates invert precedence, trust, fresh generation, immediate causation, overwrite, transport bounds, deterministic versioning, and disclosure defaults. |
 
-`make check-all` runs the ordinary suite, race detector, exact production
+`golib check --all` runs the ordinary suite, race detector, exact production
 coverage gate, fuzz targets, mutation suite, benchmarks, sibling integration,
 documentation and API checks, linters, vulnerability analysis, and NilAway.

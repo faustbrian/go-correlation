@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-correlation",
+  "module": ".",
+  "package": "telemetry",
+  "gate": "mutation",
+  "input_digest": "sha256:f55f0f3e785e497a63085320fb1dc10046ad96d7160ef41925bbb5d63082bd8d",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:efb5214a9bc53ce6c0d14aacdd48182d642f21262977f74ca7e7f7ef8bb614f4",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.27.0",
+    "evidence_origin": "approved_legacy_checkpoint"
+  },
+  "completed_at": "2026-08-28T15:03:34.484884Z"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-correlation",
+  "module": ".",
+  "package": "http",
+  "gate": "mutation",
+  "input_digest": "sha256:8a710c9df14ad0560ec51b47ee7420985702e51ea6285023804f6368a140f727",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:0bb1b77ecb390c7edea031dccb98da6a5205c9632db2e21ffc25e386631568d4",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.27.0",
+    "evidence_origin": "approved_legacy_checkpoint"
+  },
+  "completed_at": "2026-08-28T15:03:32.681771Z"
+}
