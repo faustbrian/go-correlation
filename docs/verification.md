@@ -1,6 +1,6 @@
 # Verification
 
-`make check-all` is the local release-equivalent gate. Coverage is measured
+`golib check --all` is the local release-equivalent gate. Coverage is measured
 per production package and must be exactly 100.0%. Mutation tests invert trust,
 fresh request generation, immediate causation, duplicate precedence, overwrite,
 proxy trust, transport bounds, custom JSON-RPC field validation, deterministic

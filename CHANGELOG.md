@@ -5,6 +5,16 @@ versioning once released.
 
 ## Unreleased
 
+### Changed
+
+- Adopt the versioned shared `golib` repository contract for local and hosted
+  verification while retaining package-owned API and mutation evidence.
+
+### Documentation
+
+- Remove completed implementation plans from the release tree and retain
+  package-owned documentation as the maintained reference.
+
 ## 1.0.0 - 2026-08-25
 
 ### Changed
@@ -23,10 +33,6 @@ versioning once released.
 - Harden standalone documentation validation with deterministic spelling and
   link checks, package-specific documentation gates, and repository-local
   contributor guidance.
-
-### Documentation
-
-- Link the package README to the repository-wide Golib documentation portal.
 
 ### Fixed
 

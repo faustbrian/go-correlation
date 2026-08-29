@@ -103,7 +103,7 @@ enabled, and metrics never contain identifier values.
 Run the local release-equivalent gate:
 
 ```sh
-make check-all
+golib check --all
 ```
 
 It verifies formatting, module tidiness, vet, unit and integration tests, the
@@ -113,8 +113,3 @@ compatibility, linting, Staticcheck, vulnerability analysis, and NilAway.
 
 See the [documentation index](docs/README.md), [security policy](SECURITY.md),
 and [changelog](CHANGELOG.md).
-
-## Ecosystem
-
-Use the [Golib documentation portal](https://github.com/faustbrian/golib/blob/main/docs/index.md)
-to choose companion packages, supported stacks, recipes, and operations guidance.
