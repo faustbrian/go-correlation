@@ -83,6 +83,9 @@ W3C Trace Context and Baggage remain optional application-owned propagation.
 They may be linked to these values, but correlation IDs never become trace or
 span IDs.
 
+Shared construction, ownership, lifecycle, and composition expectations are in
+the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md).
+
 ## Deterministic correlation
 
 `NewDeterministic` is an explicit opt-in for stable business workflows. It uses
@@ -103,7 +106,10 @@ enabled, and metrics never contain identifier values.
 Run the local release-equivalent gate:
 
 ```sh
-golib check --all
+make inventory
+make cohesion
+make check
+make ci
 ```
 
 It verifies formatting, module tidiness, vet, unit and integration tests, the
