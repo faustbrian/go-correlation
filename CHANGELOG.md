@@ -19,8 +19,8 @@ versioning once released.
 
 ### Documentation
 
-- Link consumers to the immutable v1.3.0 Golib ecosystem guidance and package
-  selection contract.
+- Link consumers to the immutable v1.4.0 Golib ecosystem index and Foundations
+  package-family guidance.
 - Document the lifetime, synchronization, and ownership obligations for a
   caller-supplied generator retained by a factory.
 - Remove completed implementation plans from the release tree and retain
