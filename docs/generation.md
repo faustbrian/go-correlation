@@ -5,7 +5,10 @@ The zero-option factory creates canonical UUIDv4 values through
 `crypto/rand.Reader` so concurrent request identity generation amortizes
 system entropy reads without global mutable state. There is no
 ambient generator and callers may inject an instance-scoped generator for
-testing or a different identifier family.
+testing or a different identifier family. `NewFactory` borrows that supplied
+generator for the complete lifetime of the factory. The caller must keep it
+valid for that lifetime and must provide any synchronization its `New` method
+requires; the factory does not copy, close, or otherwise take ownership of it.
 
 Deterministic generation is opt-in through `NewDeterministic`. Its HMAC input
 contains a package domain marker, numeric strategy version, domain length and
