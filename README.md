@@ -85,9 +85,9 @@ span IDs.
 
 Shared construction, ownership, lifecycle, and composition expectations are in
 the versioned [Golib ecosystem
-index](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/README.md)
+index](https://github.com/faustbrian/go-library-tools/blob/v1.5.3/docs/ecosystem/README.md)
 and its [foundations package
-guidance](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md#package-families-and-selection).
+guidance](https://github.com/faustbrian/go-library-tools/blob/v1.5.3/docs/ecosystem/design-language.md#package-families-and-selection).
 
 ## Deterministic correlation
 

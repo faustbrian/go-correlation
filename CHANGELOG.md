@@ -19,8 +19,9 @@ versioning once released.
 
 ### Documentation
 
-- Link consumers to the immutable v1.4.0 Golib ecosystem index and Foundations
-  package-family guidance.
+- Link consumers to the immutable v1.5.3 Golib ecosystem index and Foundations
+  package-family guidance, and publish the internal sibling interoperability
+  harness entry point for engineering navigation.
 - Document the lifetime, synchronization, and ownership obligations for a
   caller-supplied generator retained by a factory.
 - Remove completed implementation plans from the release tree and retain
