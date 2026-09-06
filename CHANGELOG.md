@@ -5,6 +5,14 @@ versioning once released.
 
 ## Unreleased
 
+## 1.1.0 - 2026-09-06
+
+### Added
+
+- Add `Factory.Create`, `schedule.Adapter.Create`, and
+  `schedule.Adapter.Receive` as the canonical value-creation and scheduled
+  metadata-receipt operations.
+
 ### Changed
 
 - Publish schema-v2 cohesion metadata for the root module and its transport,
@@ -16,6 +24,10 @@ versioning once released.
   immutable public proxy and checksum database identities.
 - Adopt the versioned shared `golib` repository contract for local and hosted
   verification while retaining package-owned API and mutation evidence.
+- Reject typed-nil custom generators during factory construction while keeping
+  literal nil as the cryptographic-default selection.
+- Keep `Factory.Start`, `schedule.Adapter.Start`, and `schedule.Adapter.Run` as
+  exact compatibility aliases for the new canonical names.
 
 ### Documentation
 

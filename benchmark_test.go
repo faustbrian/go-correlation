@@ -40,11 +40,11 @@ func BenchmarkFactoryNext(b *testing.B) {
 	}
 }
 
-func BenchmarkDefaultFactoryStart(b *testing.B) {
+func BenchmarkDefaultFactoryCreate(b *testing.B) {
 	factory, _ := correlation.NewFactory(correlation.FactoryOptions{})
 	b.ReportAllocs()
 	for b.Loop() {
-		if _, err := factory.Start(); err != nil {
+		if _, err := factory.Create(); err != nil {
 			b.Fatal(err)
 		}
 	}

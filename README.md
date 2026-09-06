@@ -34,12 +34,18 @@ if err != nil {
     return err
 }
 
-root, err := factory.Start()
+root, err := factory.Create()
 if err != nil {
     return err
 }
 child, err := factory.Next(root)
 ```
+
+`Create` is the canonical name for fresh root values. The released `Start`
+method remains as a compatibility alias with identical values and errors.
+Scheduled work follows the same vocabulary: use `schedule.Adapter.Create` for
+an independent run and `schedule.Adapter.Receive` for explicitly propagated
+metadata; `Start` and `Run` remain compatibility aliases.
 
 The default factory uses an explicitly owned, bounded entropy buffer around the
 cryptographic UUIDv4 generator from `identifier`. A caller-supplied generator

@@ -9,6 +9,14 @@ testing or a different identifier family. `NewFactory` borrows that supplied
 generator for the complete lifetime of the factory. The caller must keep it
 valid for that lifetime and must provide any synchronization its `New` method
 requires; the factory does not copy, close, or otherwise take ownership of it.
+A literal nil generator selects the cryptographic default. A non-nil
+`Generator` interface containing a typed-nil value is invalid and
+`NewFactory` reports `ErrInvalidFactory`.
+
+`Factory.Create` generates correlation identity first and request identity
+second. If either generation fails, it returns no partial values; failure of
+the first generation does not invoke the generator again. `Factory.Start`
+delegates to `Create` for compatibility.
 
 Deterministic generation is opt-in through `NewDeterministic`. Its HMAC input
 contains a package domain marker, numeric strategy version, domain length and

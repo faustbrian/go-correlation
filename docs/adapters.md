@@ -8,8 +8,11 @@ JSON-RPC operates on an explicit `Metadata` map of raw JSON values so a strict
 envelope decoder can preserve duplicate members. It does not add a `meta`
 member or otherwise rewrite protocol envelopes.
 
-Queue and scheduler adapters use application-owned string maps. The webhook
-adapter names the HTTP send/receive boundary. The request ID bridge accepts a
+Queue and scheduler adapters use application-owned string maps. A scheduler
+uses `Create` for an independent invocation and `Receive` for an explicitly
+trusted or rejected metadata boundary; the legacy `Start` and `Run` methods
+delegate to those names. The webhook adapter names the HTTP send/receive
+boundary. The request ID bridge accepts a
 bound lookup function; pass a closure around
 `requestid.FromContext(ctx, requestid.Request)` after the middleware source is
 explicitly trusted.

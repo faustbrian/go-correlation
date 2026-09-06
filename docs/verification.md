@@ -4,7 +4,9 @@
 per production package and must be exactly 100.0%. Mutation tests invert trust,
 fresh request generation, immediate causation, duplicate precedence, overwrite,
 proxy trust, transport bounds, custom JSON-RPC field validation, deterministic
-versioning, and redaction decisions; every mutant must be killed.
+versioning, typed-nil generator rejection, root-creation ordering and failure
+atomicity, legacy-method delegation, and redaction decisions; every mutant must
+be killed.
 
 The race detector covers factory, context, and transport tests. Fuzz smoke
 tests exercise typed parsing, carrier extraction, HTTP headers, and raw JSON-RPC
