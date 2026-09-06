@@ -15,6 +15,16 @@ causation identifiers. It carries those semantics through HTTP, JSON-RPC,
 queues, scheduled work, webhooks, logs, and OpenTelemetry without creating a
 global propagator or redefining trace and idempotency concepts.
 
+The module is a stable v1 library. It requires and is tested with Go 1.26.6.
+The latest published release is `v1.0.0`; additive lifecycle names documented
+on `main` are queued for the next release.
+
+## Install
+
+```sh
+go get github.com/faustbrian/go-correlation@v1
+```
+
 ## Semantics
 
 - `CorrelationID` groups one logical interaction or workflow.
@@ -34,18 +44,28 @@ if err != nil {
     return err
 }
 
-root, err := factory.Create()
+root, err := factory.Start()
 if err != nil {
     return err
 }
 child, err := factory.Next(root)
+if err != nil {
+    return err
+}
 ```
 
-`Create` is the canonical name for fresh root values. The released `Start`
-method remains as a compatibility alias with identical values and errors.
-Scheduled work follows the same vocabulary: use `schedule.Adapter.Create` for
-an independent run and `schedule.Adapter.Receive` for explicitly propagated
-metadata; `Start` and `Run` remain compatibility aliases.
+The complete compiler-checked released-v1 version is the package
+[`Example`](example_test.go). Further examples cover
+[`Factory.Create`](example_test.go) and
+[`Factory.Next`](example_test.go).
+
+`Start` is the published `v1.0.0` operation for fresh root values. On `main`,
+`Create` is its additive canonical successor and is queued for the next
+release; after that release, `Start` remains a compatibility alias with
+identical values and errors. Scheduled work follows the same boundary: the
+unreleased `schedule.Adapter.Create` and `schedule.Adapter.Receive` names are
+canonical on `main`, while published `v1.0.0` consumers use the compatible
+`Start` and `Run` methods.
 
 The default factory uses an explicitly owned, bounded entropy buffer around the
 cryptographic UUIDv4 generator from `identifier`. A caller-supplied generator
@@ -89,6 +109,38 @@ W3C Trace Context and Baggage remain optional application-owned propagation.
 They may be linked to these values, but correlation IDs never become trace or
 span IDs.
 
+## When to use it
+
+Use this module when work crosses process, protocol, queue, retry, or scheduled
+boundaries and operators need to relate those attempts without conflating
+their identities. Do not use it as an authorization, tenancy, uniqueness,
+deduplication, replay-protection, or idempotency mechanism, and do not replace
+OpenTelemetry trace or span identity with correlation values.
+
+## Construction, errors, and lifecycle
+
+`NewFactory` and `NewCodec` validate their complete value configuration.
+`NewPropagator` and transport constructors reject missing dependencies and
+validate the policy options they own. The zero `Policy` accepts canonical
+ASCII identifiers up to 128 bytes. Stable sentinel categories such as
+`ErrInvalidID`, `ErrInvalidFactory`, and `ErrGeneration` are matched with
+`errors.Is`; wrapped causes remain available where disclosure is safe.
+
+Factory, codec, and adapter operations perform no network I/O, retry, or
+detached work. `WithValues`, `FromContext`, and HTTP middleware use only the
+caller-owned context passed to that call; they do not retain it. The module
+starts no goroutines, opens no resources, and owns no `Close` or `Shutdown`
+operation. Applications retain ownership of carriers, headers, maps, contexts,
+telemetry providers, and supplied callbacks or generators.
+
+The built-in factory and immutable strategies are safe for concurrent use.
+A caller-supplied generator and HTTP `Trust` callback are borrowed for the
+owning object's lifetime, so callers must keep them valid and provide any
+synchronization they require. Extraction and receive operations only read
+carriers. Send, inject, and HTTP wrap operations update the carrier or headers
+supplied for that call; callers must not concurrently reuse those mutable
+values without their own synchronization.
+
 Shared construction, ownership, lifecycle, and composition expectations are in
 the versioned [Golib ecosystem
 index](https://github.com/faustbrian/go-library-tools/blob/v1.5.3/docs/ecosystem/README.md)
@@ -106,9 +158,11 @@ Deterministic correlation is linkable and is never the factory default.
 
 Identifiers use the canonical `[A-Za-z0-9_-]` alphabet and a default maximum
 of 128 bytes. Carriers reject empty, oversized, malformed, control-bearing,
-Unicode, and conflicting values. Injection refuses every populated target
-field. Observability output is redacted unless disclosure is explicitly
-enabled, and metrics never contain identifier values.
+Unicode, and conflicting values. Injection refuses a populated target field
+for each non-empty identifier it would write. A direct partial `Codec.Inject`
+leaves fields corresponding to empty identifiers unchanged, so callers must
+clear any unrelated stale fields first. Observability output is redacted unless
+disclosure is explicitly enabled, and metrics never contain identifier values.
 
 ## Verification
 
@@ -127,4 +181,9 @@ smoke tests, mutation tests, allocation benchmarks, documentation, API
 compatibility, linting, Staticcheck, vulnerability analysis, and NilAway.
 
 See the [documentation index](docs/README.md), [security policy](SECURITY.md),
-and [changelog](CHANGELOG.md).
+and [changelog](CHANGELOG.md). Operational limits and performance caveats are
+in the [operations guide](docs/operations.md); symptom-driven recovery steps
+are in [troubleshooting](docs/troubleshooting.md). Adoption questions belong in
+[GitHub Discussions](https://github.com/faustbrian/go-correlation/discussions),
+and reproducible defects belong in
+[GitHub Issues](https://github.com/faustbrian/go-correlation/issues/new/choose).

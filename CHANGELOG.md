@@ -5,8 +5,6 @@ versioning once released.
 
 ## Unreleased
 
-## 1.1.0 - 2026-09-06
-
 ### Added
 
 - Add `Factory.Create`, `schedule.Adapter.Create`, and
@@ -31,6 +29,9 @@ versioning once released.
 
 ### Documentation
 
+- Add the stable-v1 install and support contract, compiler-checked quick-start
+  navigation, complete lifecycle and concurrency ownership, operational limits,
+  actionable troubleshooting, and a repository-bound documentation gate.
 - Link consumers to the immutable v1.5.3 Golib ecosystem index and Foundations
   package-family guidance, and publish the internal sibling interoperability
   harness entry point for engineering navigation.
