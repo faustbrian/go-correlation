@@ -140,7 +140,7 @@ func TestEveryTransportPreservesWorkflowAndRotatesAttemptIdentity(t *testing.T) 
 			t.Fatal(err)
 		}
 		hops = append(hops, scheduledMessage)
-		scheduledRun, err := scheduleAdapter.Run(scheduledMetadata, true)
+		scheduledRun, err := scheduleAdapter.Receive(scheduledMetadata, true)
 		if err != nil {
 			t.Fatal(err)
 		}

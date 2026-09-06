@@ -36,13 +36,21 @@ func New(factory *correlation.Factory, options Options) (*Adapter, error) {
 	return &Adapter{factory: factory, queue: queueAdapter}, nil
 }
 
-// Start begins an independent scheduler invocation with no implicit derived
+// Create begins an independent scheduler invocation with no implicit derived
 // or stable workflow identity.
-func (adapter *Adapter) Start() (correlation.Values, error) {
+func (adapter *Adapter) Create() (correlation.Values, error) {
 	if adapter == nil || adapter.factory == nil {
 		return correlation.Values{}, ErrInvalidOptions
 	}
-	return adapter.factory.Start()
+	return adapter.factory.Create()
+}
+
+// Start begins an independent scheduler invocation with no implicit derived
+// or stable workflow identity.
+//
+// Deprecated: use Create.
+func (adapter *Adapter) Start() (correlation.Values, error) {
+	return adapter.Create()
 }
 
 // Enqueue creates a child scheduled-work message.
@@ -53,10 +61,17 @@ func (adapter *Adapter) Enqueue(metadata map[string]string, parent correlation.V
 	return adapter.queue.Send(metadata, parent)
 }
 
-// Run receives explicitly trusted scheduler metadata as a fresh attempt.
-func (adapter *Adapter) Run(metadata map[string]string, trusted bool) (correlation.Values, error) {
+// Receive receives explicitly trusted scheduler metadata as a fresh attempt.
+func (adapter *Adapter) Receive(metadata map[string]string, trusted bool) (correlation.Values, error) {
 	if adapter == nil || adapter.queue == nil {
 		return correlation.Values{}, ErrInvalidOptions
 	}
 	return adapter.queue.Receive(metadata, trusted)
+}
+
+// Run receives explicitly trusted scheduler metadata as a fresh attempt.
+//
+// Deprecated: use Receive.
+func (adapter *Adapter) Run(metadata map[string]string, trusted bool) (correlation.Values, error) {
+	return adapter.Receive(metadata, trusted)
 }

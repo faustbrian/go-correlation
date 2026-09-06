@@ -192,12 +192,17 @@ func (factory *Factory) Accept(inbound Values, policy InboundPolicy) (Values, er
     Accept starts a receiving hop. No inbound value is used unless its exact
     semantic trust is enabled.
 
+func (factory *Factory) Create() (Values, error)
+    Create creates a new correlation and request identifier.
+
 func (factory *Factory) Next(parent Values) (Values, error)
     Next preserves correlation, creates a request ID, and makes the prior
     request the immediate cause.
 
 func (factory *Factory) Start() (Values, error)
     Start creates a new correlation and request identifier.
+
+    Deprecated: use Create.
 
 type FactoryOptions struct {
 	Policy    Policy
@@ -474,15 +479,26 @@ type Adapter struct {
 func New(factory *correlation.Factory, options Options) (*Adapter, error)
     New constructs a scheduled-work adapter.
 
+func (adapter *Adapter) Create() (correlation.Values, error)
+    Create begins an independent scheduler invocation with no implicit derived
+    or stable workflow identity.
+
 func (adapter *Adapter) Enqueue(metadata map[string]string, parent correlation.Values) (correlation.Values, error)
     Enqueue creates a child scheduled-work message.
+
+func (adapter *Adapter) Receive(metadata map[string]string, trusted bool) (correlation.Values, error)
+    Receive receives explicitly trusted scheduler metadata as a fresh attempt.
 
 func (adapter *Adapter) Run(metadata map[string]string, trusted bool) (correlation.Values, error)
     Run receives explicitly trusted scheduler metadata as a fresh attempt.
 
+    Deprecated: use Receive.
+
 func (adapter *Adapter) Start() (correlation.Values, error)
     Start begins an independent scheduler invocation with no implicit derived or
     stable workflow identity.
+
+    Deprecated: use Create.
 
 type Options struct {
 	Queue queuecorrelation.Options

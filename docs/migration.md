@@ -11,3 +11,10 @@ not preserve a legacy request ID across retries. Install explicit adapters in
 parallel, compare propagation in redacted logs, then remove the old global or
 ambient accessor. Header aliases should be temporary codec configuration with
 a documented retirement date.
+
+For code already using this module, migrate new root creation from
+`Factory.Start` to `Factory.Create`. Scheduled integrations should migrate
+`Adapter.Start` to `Adapter.Create` and `Adapter.Run` to `Adapter.Receive`.
+The old methods remain source-compatible aliases and preserve values, trust
+handling, generator calls, errors, and nil-receiver behavior, so migration does
+not require a coordinated cutover.

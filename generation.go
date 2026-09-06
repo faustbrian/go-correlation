@@ -57,6 +57,9 @@ func NewFactory(options FactoryOptions) (*Factory, error) {
 		return nil, fmt.Errorf("%w: %w", ErrInvalidFactory, err)
 	}
 	validateGenerated := options.Generator != nil
+	if validateGenerated && nilLike(options.Generator) {
+		return nil, fmt.Errorf("%w: nil generator", ErrInvalidFactory)
+	}
 	if options.Generator == nil {
 		options.Generator = newBufferedUUIDGenerator(cryptorand.Reader)
 	}
@@ -83,8 +86,8 @@ func (generator *uuidGenerator) New() (string, error) {
 	return id.String(), nil
 }
 
-// Start creates a new correlation and request identifier.
-func (factory *Factory) Start() (Values, error) {
+// Create creates a new correlation and request identifier.
+func (factory *Factory) Create() (Values, error) {
 	correlationID, err := factory.newCorrelationID()
 	if err != nil {
 		return Values{}, err
@@ -94,6 +97,13 @@ func (factory *Factory) Start() (Values, error) {
 		return Values{}, err
 	}
 	return Values{CorrelationID: correlationID, RequestID: requestID}, nil
+}
+
+// Start creates a new correlation and request identifier.
+//
+// Deprecated: use Create.
+func (factory *Factory) Start() (Values, error) {
+	return factory.Create()
 }
 
 // Next preserves correlation, creates a request ID, and makes the prior

@@ -99,13 +99,13 @@ func (middleware *Middleware) receive(
 	request *http.Request,
 ) (correlation.Values, bool, error) {
 	if middleware.options.Invalid == ReplaceInvalid && middleware.options.Trust == nil {
-		values, err := middleware.factory.Start()
+		values, err := middleware.factory.Create()
 
 		return values, false, err
 	}
 	inbound, err := middleware.codec.Extract(headerCarrier{request.Header})
 	if err != nil && middleware.options.Invalid == RejectInvalid {
-		values, generationErr := middleware.factory.Start()
+		values, generationErr := middleware.factory.Create()
 		if generationErr != nil {
 			return correlation.Values{}, false, generationErr
 		}

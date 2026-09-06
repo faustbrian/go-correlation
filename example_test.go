@@ -6,6 +6,14 @@ import (
 	correlation "github.com/faustbrian/go-correlation"
 )
 
+func ExampleFactory_Create() {
+	generator := &sequenceGenerator{values: []string{"workflow", "root-request"}}
+	factory, _ := correlation.NewFactory(correlation.FactoryOptions{Generator: generator})
+	root, _ := factory.Create()
+	fmt.Println(root.CorrelationID, root.RequestID, root.CausationID)
+	// Output: workflow root-request
+}
+
 func ExampleFactory_Next() {
 	generator := &sequenceGenerator{values: []string{"child-request"}}
 	factory, _ := correlation.NewFactory(correlation.FactoryOptions{Generator: generator})
