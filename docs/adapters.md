@@ -1,5 +1,11 @@
 # Adapters
 
+New integrations use the target-oriented `adapters/http`, `adapters/jsonrpc`,
+`adapters/queue`, `adapters/schedule`, `adapters/slog`, and `adapters/otel`
+packages. The former top-level paths remain deprecated compatibility
+implementations and identity authorities for their released exported types,
+reflection identities, sentinels, methods, and behavior.
+
 HTTP uses `X-Correlation-ID`, `X-Request-ID`, and `X-Causation-ID`. The adapter
 finds case-insensitive duplicates, sanitizes request headers to the accepted
 values, mirrors them to the response, and stores immutable context values.

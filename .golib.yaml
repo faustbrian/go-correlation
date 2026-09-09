@@ -19,6 +19,12 @@ api:
     path: api/baseline.txt
     packages:
     - "."
+    - ./adapters/http
+    - ./adapters/jsonrpc
+    - ./adapters/otel
+    - ./adapters/queue
+    - ./adapters/schedule
+    - ./adapters/slog
     - ./http
     - ./http/requestidbridge
     - ./jsonrpc

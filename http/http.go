@@ -1,5 +1,8 @@
 // Package httpcorrelation explicitly propagates correlation metadata over
 // HTTP. Middleware installation and proxy trust remain application owned.
+//
+// Deprecated: use github.com/faustbrian/go-correlation/adapters/http. This
+// package remains supported through the documented compatibility interval.
 package httpcorrelation
 
 import (

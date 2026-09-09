@@ -16,8 +16,7 @@ queues, scheduled work, webhooks, logs, and OpenTelemetry without creating a
 global propagator or redefining trace and idempotency concepts.
 
 The module is a stable v1 library. It requires and is tested with Go 1.26.6.
-The latest published release is `v1.0.0`; additive lifecycle names documented
-on `main` are queued for the next release.
+Stable releases are selected through the `v1` module line.
 
 ## Install
 
@@ -59,13 +58,10 @@ The complete compiler-checked released-v1 version is the package
 [`Factory.Create`](example_test.go) and
 [`Factory.Next`](example_test.go).
 
-`Start` is the published `v1.0.0` operation for fresh root values. On `main`,
-`Create` is its additive canonical successor and is queued for the next
-release; after that release, `Start` remains a compatibility alias with
-identical values and errors. Scheduled work follows the same boundary: the
-unreleased `schedule.Adapter.Create` and `schedule.Adapter.Receive` names are
-canonical on `main`, while published `v1.0.0` consumers use the compatible
-`Start` and `Run` methods.
+`Create` is the canonical operation for fresh root values. `Start` remains a
+compatibility alias with identical values and errors. Scheduled work follows
+the same boundary: `schedule.Adapter.Create` and `schedule.Adapter.Receive`
+are canonical, while `Start` and `Run` remain compatible aliases.
 
 The default factory uses an explicitly owned, bounded entropy buffer around the
 cryptographic UUIDv4 generator from `identifier`. A caller-supplied generator
@@ -90,20 +86,24 @@ transport boundary first. Every accepted hop receives a new request ID.
 
 ## Adapters
 
-- [`http`](http/) sanitizes inbound headers, applies explicit proxy trust,
+- [`adapters/http`](adapters/http/) sanitizes inbound headers, applies explicit proxy trust,
   installs immutable context values, and injects outbound hops.
 - [`http/requestidbridge`](http/requestidbridge/) explicitly adopts a trusted
   `http-middleware/requestid` value without importing its private key.
-- [`jsonrpc`](jsonrpc/) reads and writes a separate metadata object without
+- [`adapters/jsonrpc`](adapters/jsonrpc/) reads and writes a separate metadata object without
   altering JSON-RPC envelopes.
-- [`queue`](queue/) preserves workflow identity while generating a distinct
+- [`adapters/queue`](adapters/queue/) preserves workflow identity while generating a distinct
   request ID for every retry or redelivery.
-- [`schedule`](schedule/) starts independent runs unless metadata is
+- [`adapters/schedule`](adapters/schedule/) starts independent runs unless metadata is
   deliberately propagated.
 - [`webhook`](webhook/) gives outbound and inbound webhook hops HTTP semantics.
-- [`log`](log/) supplies redacted, keyed-hash, or explicitly raw `slog` attrs.
-- [`telemetry`](telemetry/) attaches attributes to telemetry-owned links and
+- [`adapters/slog`](adapters/slog/) supplies redacted, keyed-hash, or explicitly raw `slog` attrs.
+- [`adapters/otel`](adapters/otel/) attaches attributes to telemetry-owned links and
   exposes only fixed-cardinality presence flags to metrics.
+
+The former `http`, `jsonrpc`, `queue`, `schedule`, `log`, and `telemetry`
+import paths remain deprecated compatibility implementations and identity
+authorities. New code should use the target-oriented `adapters/...` paths.
 
 W3C Trace Context and Baggage remain optional application-owned propagation.
 They may be linked to these values, but correlation IDs never become trace or

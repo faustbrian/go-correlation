@@ -6,13 +6,17 @@ releasable module; its public packages are:
 
 - [`correlation`](../README.md) for values, factories, codecs, trust policy,
   disclosure, context storage, and transport-neutral propagation;
-- [`http`](../http/) and
+- [`adapters/http`](../adapters/http/) and
   [`http/requestidbridge`](../http/requestidbridge/) for HTTP boundaries;
-- [`jsonrpc`](../jsonrpc/), [`queue`](../queue/),
-  [`schedule`](../schedule/), and [`webhook`](../webhook/) for protocol and
-  delivery boundaries; and
-- [`log`](../log/) and [`telemetry`](../telemetry/) for bounded observability
-  projection.
+- [`adapters/jsonrpc`](../adapters/jsonrpc/),
+  [`adapters/queue`](../adapters/queue/),
+  [`adapters/schedule`](../adapters/schedule/), and
+  [`webhook`](../webhook/) for protocol and delivery boundaries; and
+- [`adapters/slog`](../adapters/slog/) and
+  [`adapters/otel`](../adapters/otel/) for bounded observability projection.
+
+The former `http`, `jsonrpc`, `queue`, `schedule`, `log`, and `telemetry` paths
+remain deprecated compatibility implementations and identity authorities.
 
 ## Learn and adopt
 

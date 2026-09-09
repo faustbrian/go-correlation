@@ -5,8 +5,12 @@ versioning once released.
 
 ## Unreleased
 
+## 1.1.0 - 2026-09-09
+
 ### Added
 
+- Add target-oriented `adapters/http`, `adapters/jsonrpc`, `adapters/queue`,
+  `adapters/schedule`, `adapters/slog`, and `adapters/otel` packages.
 - Add `Factory.Create`, `schedule.Adapter.Create`, and
   `schedule.Adapter.Receive` as the canonical value-creation and scheduled
   metadata-receipt operations.
@@ -26,6 +30,9 @@ versioning once released.
   literal nil as the cryptographic-default selection.
 - Keep `Factory.Start`, `schedule.Adapter.Start`, and `schedule.Adapter.Run` as
   exact compatibility aliases for the new canonical names.
+- Retain the released `http`, `jsonrpc`, `queue`, `schedule`, `log`, and
+  `telemetry` paths as deprecated compatibility implementations with unchanged
+  exported type, reflection, sentinel, and runtime behavior.
 
 ### Documentation
 
