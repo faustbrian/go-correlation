@@ -19,8 +19,8 @@ versioning once released.
 
 - Publish schema-v2 cohesion metadata for the root module and its transport,
   logging, and observability packages.
-- Adopt the checksum-verified `go-library-tools` v1.4.0 CLI, local cohesion
-  validation, and immutable hosted-workflow enforcement.
+- Adopt the checksum-verified `go-library-tools` v1.6.1 CLI, local cohesion
+  validation, and immutable proportional hosted-workflow enforcement.
 - Reconcile the root and interoperability-harness `go-identifier` v1.0.0
   checksums and all bootstrap-shadowed harness dependency checksums with their
   immutable public proxy and checksum database identities.
