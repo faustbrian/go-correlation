@@ -10,7 +10,7 @@ import (
 	"errors"
 
 	correlation "github.com/faustbrian/go-correlation"
-	queuecorrelation "github.com/faustbrian/go-correlation/queue"
+	queuecorrelation "github.com/faustbrian/go-correlation/adapters/queue"
 )
 
 // ErrInvalidOptions reports missing scheduled-work dependencies.

@@ -1,12 +1,14 @@
 package correlationschedule_test
 
+//lint:file-ignore SA1019 This compatibility test intentionally exercises the deprecated package.
+
 import (
 	"reflect"
 	"testing"
 
 	correlation "github.com/faustbrian/go-correlation"
 	schedule "github.com/faustbrian/go-correlation/adapters/schedule"
-	legacy "github.com/faustbrian/go-correlation/schedule"
+	legacy "github.com/faustbrian/go-correlation/schedule" //nolint:staticcheck // The test proves released type identity.
 )
 
 func TestCanonicalSchedulePreservesLegacyIdentity(t *testing.T) {
@@ -18,7 +20,7 @@ func TestCanonicalSchedulePreservesLegacyIdentity(t *testing.T) {
 	if reflect.TypeOf(schedule.Options{}) != reflect.TypeOf(legacy.Options{}) {
 		t.Fatal("options type identity differs")
 	}
-	if schedule.ErrInvalidOptions != legacy.ErrInvalidOptions {
+	if schedule.ErrInvalidOptions != legacy.ErrInvalidOptions { //nolint:errorlint // Exact sentinel identity is the contract.
 		t.Fatal("error identity differs")
 	}
 	if got := reflect.TypeOf(schedule.Options{}).PkgPath(); got != "github.com/faustbrian/go-correlation/schedule" {

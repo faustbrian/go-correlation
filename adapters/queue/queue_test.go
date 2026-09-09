@@ -1,12 +1,14 @@
 package correlationqueue_test
 
+//lint:file-ignore SA1019 This compatibility test intentionally exercises the deprecated package.
+
 import (
 	"reflect"
 	"testing"
 
 	correlation "github.com/faustbrian/go-correlation"
 	queue "github.com/faustbrian/go-correlation/adapters/queue"
-	legacy "github.com/faustbrian/go-correlation/queue"
+	legacy "github.com/faustbrian/go-correlation/queue" //nolint:staticcheck // The test proves released type identity.
 )
 
 func TestCanonicalQueuePreservesLegacyIdentity(t *testing.T) {
@@ -18,7 +20,7 @@ func TestCanonicalQueuePreservesLegacyIdentity(t *testing.T) {
 	if reflect.TypeOf(queue.Options{}) != reflect.TypeOf(legacy.Options{}) {
 		t.Fatal("options type identity differs")
 	}
-	if queue.ErrInvalidOptions != legacy.ErrInvalidOptions {
+	if queue.ErrInvalidOptions != legacy.ErrInvalidOptions { //nolint:errorlint // Exact sentinel identity is the contract.
 		t.Fatal("error identity differs")
 	}
 	if got := reflect.TypeOf(queue.Options{}).PkgPath(); got != "github.com/faustbrian/go-correlation/queue" {

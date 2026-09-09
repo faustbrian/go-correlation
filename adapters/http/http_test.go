@@ -1,5 +1,7 @@
 package httpcorrelation_test
 
+//lint:file-ignore SA1019 This compatibility test intentionally exercises the deprecated package.
+
 import (
 	"net/http"
 	"net/http/httptest"
@@ -8,7 +10,7 @@ import (
 
 	correlation "github.com/faustbrian/go-correlation"
 	httpcorrelation "github.com/faustbrian/go-correlation/adapters/http"
-	legacy "github.com/faustbrian/go-correlation/http"
+	legacy "github.com/faustbrian/go-correlation/http" //nolint:staticcheck // The test proves released type identity.
 )
 
 func TestCanonicalHTTPPreservesLegacyIdentity(t *testing.T) {
@@ -20,7 +22,7 @@ func TestCanonicalHTTPPreservesLegacyIdentity(t *testing.T) {
 	if reflect.TypeOf(httpcorrelation.Options{}) != reflect.TypeOf(legacy.Options{}) {
 		t.Fatal("options type identity differs")
 	}
-	if httpcorrelation.ErrInvalidOptions != legacy.ErrInvalidOptions {
+	if httpcorrelation.ErrInvalidOptions != legacy.ErrInvalidOptions { //nolint:errorlint // Exact sentinel identity is the contract.
 		t.Fatal("error identity differs")
 	}
 	if got := reflect.TypeOf(httpcorrelation.Options{}).PkgPath(); got != "github.com/faustbrian/go-correlation/http" {

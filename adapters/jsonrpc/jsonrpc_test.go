@@ -1,5 +1,7 @@
 package correlationjsonrpc_test
 
+//lint:file-ignore SA1019 This compatibility test intentionally exercises the deprecated package.
+
 import (
 	"encoding/json"
 	"reflect"
@@ -7,7 +9,7 @@ import (
 
 	correlation "github.com/faustbrian/go-correlation"
 	jsonrpc "github.com/faustbrian/go-correlation/adapters/jsonrpc"
-	legacy "github.com/faustbrian/go-correlation/jsonrpc"
+	legacy "github.com/faustbrian/go-correlation/jsonrpc" //nolint:staticcheck // The test proves released type identity.
 )
 
 func TestCanonicalJSONRPCPreservesLegacyIdentity(t *testing.T) {
@@ -22,7 +24,8 @@ func TestCanonicalJSONRPCPreservesLegacyIdentity(t *testing.T) {
 			t.Fatalf("%s type identity differs", name)
 		}
 	}
-	if jsonrpc.ErrInvalidOptions != legacy.ErrInvalidOptions || jsonrpc.ErrMalformedMetadata != legacy.ErrMalformedMetadata {
+	if jsonrpc.ErrInvalidOptions != legacy.ErrInvalidOptions || //nolint:errorlint // Exact sentinel identity is the contract.
+		jsonrpc.ErrMalformedMetadata != legacy.ErrMalformedMetadata { //nolint:errorlint // Exact sentinel identity is the contract.
 		t.Fatal("error identity differs")
 	}
 	if got := reflect.TypeOf(jsonrpc.Metadata{}).PkgPath(); got != "github.com/faustbrian/go-correlation/jsonrpc" {

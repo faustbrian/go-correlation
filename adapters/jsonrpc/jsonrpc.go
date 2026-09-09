@@ -2,9 +2,11 @@
 // Its public types and behavior retain the released jsonrpc package identities.
 package correlationjsonrpc
 
+//lint:file-ignore SA1019 The successor imports the deprecated package to preserve released type identity.
+
 import (
 	correlation "github.com/faustbrian/go-correlation"
-	legacy "github.com/faustbrian/go-correlation/jsonrpc"
+	legacy "github.com/faustbrian/go-correlation/jsonrpc" //nolint:staticcheck // The successor must retain released type identity.
 )
 
 const (

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	correlation "github.com/faustbrian/go-correlation"
-	queuecorrelation "github.com/faustbrian/go-correlation/queue"
+	queuecorrelation "github.com/faustbrian/go-correlation/adapters/queue"
 	schedulecorrelation "github.com/faustbrian/go-correlation/schedule"
 )
 

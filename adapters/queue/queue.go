@@ -2,9 +2,11 @@
 // Its public types and behavior retain the released queue package identities.
 package correlationqueue
 
+//lint:file-ignore SA1019 The successor imports the deprecated package to preserve released type identity.
+
 import (
 	correlation "github.com/faustbrian/go-correlation"
-	legacy "github.com/faustbrian/go-correlation/queue"
+	legacy "github.com/faustbrian/go-correlation/queue" //nolint:staticcheck // The successor must retain released type identity.
 )
 
 // ErrInvalidOptions reports invalid queue propagation configuration.

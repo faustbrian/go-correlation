@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	correlation "github.com/faustbrian/go-correlation"
-	httpcorrelation "github.com/faustbrian/go-correlation/http"
+	httpcorrelation "github.com/faustbrian/go-correlation/adapters/http"
 	webhookcorrelation "github.com/faustbrian/go-correlation/webhook"
 )
 
