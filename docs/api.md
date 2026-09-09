@@ -11,6 +11,12 @@ and `schedule.Adapter.Receive` to accept application-owned metadata under an
 explicit trust decision. The released `Start` and `Run` names remain exact
 compatibility aliases for those operations.
 
+Adapters are selected through `adapters/http`, `adapters/jsonrpc`,
+`adapters/queue`, `adapters/schedule`, `adapters/slog`, and `adapters/otel`.
+The former top-level paths remain deprecated compatibility implementations and
+identity authorities. The four transport successors alias the released named
+types so values cross old and new imports without conversion.
+
 Use `NewDeterministic` only after a privacy review. Use `Disclose` indirectly
 through the log and telemetry packages unless implementing another bounded
 observability adapter. The generated [API baseline](../api/baseline.txt) is the

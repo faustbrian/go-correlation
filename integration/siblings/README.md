@@ -66,14 +66,14 @@ publication.
 
 ## References
 
-- [Correlation overview](../../README.md)
-- [Adapter map](../../docs/adapters.md)
-- [Adoption guidance](../../docs/adoption.md)
-- [Verification contract](../../docs/verification.md)
-- [Security policy](../../SECURITY.md)
-- [Support](../../SUPPORT.md)
-- [Contributing](../../CONTRIBUTING.md)
-- [Repository changelog](../../CHANGELOG.md)
-- [License](../../LICENSE)
+- [Correlation overview](https://github.com/faustbrian/go-correlation/blob/main/README.md)
+- [Adapter map](https://github.com/faustbrian/go-correlation/blob/main/docs/adapters.md)
+- [Adoption guidance](https://github.com/faustbrian/go-correlation/blob/main/docs/adoption.md)
+- [Verification contract](https://github.com/faustbrian/go-correlation/blob/main/docs/verification.md)
+- [Security policy](https://github.com/faustbrian/go-correlation/blob/main/SECURITY.md)
+- [Support](https://github.com/faustbrian/go-correlation/blob/main/SUPPORT.md)
+- [Contributing](https://github.com/faustbrian/go-correlation/blob/main/CONTRIBUTING.md)
+- [Repository changelog](https://github.com/faustbrian/go-correlation/blob/main/CHANGELOG.md)
+- [License](https://github.com/faustbrian/go-correlation/blob/main/LICENSE)
 - [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.5.3/docs/ecosystem/README.md)
 - [Foundations family guidance](https://github.com/faustbrian/go-library-tools/blob/v1.5.3/docs/ecosystem/design-language.md#package-families-and-selection)

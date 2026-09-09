@@ -1,13 +1,16 @@
 // Package schedule provides explicit correlation lifecycle helpers for
 // scheduled work. Independent invocations start independent workflows unless
 // application-owned metadata is deliberately propagated.
+//
+// Deprecated: use github.com/faustbrian/go-correlation/adapters/schedule. This
+// package remains supported through the documented compatibility interval.
 package schedule
 
 import (
 	"errors"
 
 	correlation "github.com/faustbrian/go-correlation"
-	queuecorrelation "github.com/faustbrian/go-correlation/queue"
+	queuecorrelation "github.com/faustbrian/go-correlation/adapters/queue"
 )
 
 // ErrInvalidOptions reports missing scheduled-work dependencies.

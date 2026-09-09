@@ -18,3 +18,28 @@ For code already using this module, migrate new root creation from
 The old methods remain source-compatible aliases and preserve values, trust
 handling, generator calls, errors, and nil-receiver behavior, so migration does
 not require a coordinated cutover.
+
+Migrate transport imports independently:
+
+- `github.com/faustbrian/go-correlation/http` to
+  `github.com/faustbrian/go-correlation/adapters/http`;
+- `github.com/faustbrian/go-correlation/jsonrpc` to
+  `github.com/faustbrian/go-correlation/adapters/jsonrpc`;
+- `github.com/faustbrian/go-correlation/queue` to
+  `github.com/faustbrian/go-correlation/adapters/queue`; and
+- `github.com/faustbrian/go-correlation/schedule` to
+  `github.com/faustbrian/go-correlation/adapters/schedule`;
+- `github.com/faustbrian/go-correlation/log` to
+  `github.com/faustbrian/go-correlation/adapters/slog`; and
+- `github.com/faustbrian/go-correlation/telemetry` to
+  `github.com/faustbrian/go-correlation/adapters/otel`.
+
+`adapters/http` keeps the `httpcorrelation` package identifier. Unless an
+explicit import alias is retained, update the other default identifiers from
+`jsonrpc`, `queue`, `schedule`, `log`, and `telemetry` to
+`correlationjsonrpc`, `correlationqueue`, `correlationschedule`,
+`correlationslog`, and `correlationotel`. Exported transport type identities
+remain the released identities, so those imports can migrate one boundary at a
+time without value conversion. The legacy paths remain supported for the
+longer of 180 days after public successor availability and two subsequently
+published stable minor releases.

@@ -5,8 +5,12 @@ versioning once released.
 
 ## Unreleased
 
+## 1.1.0 - 2026-09-09
+
 ### Added
 
+- Add target-oriented `adapters/http`, `adapters/jsonrpc`, `adapters/queue`,
+  `adapters/schedule`, `adapters/slog`, and `adapters/otel` packages.
 - Add `Factory.Create`, `schedule.Adapter.Create`, and
   `schedule.Adapter.Receive` as the canonical value-creation and scheduled
   metadata-receipt operations.
@@ -15,8 +19,8 @@ versioning once released.
 
 - Publish schema-v2 cohesion metadata for the root module and its transport,
   logging, and observability packages.
-- Adopt the checksum-verified `go-library-tools` v1.4.0 CLI, local cohesion
-  validation, and immutable hosted-workflow enforcement.
+- Adopt the checksum-verified `go-library-tools` v1.6.1 CLI, local cohesion
+  validation, and immutable proportional hosted-workflow enforcement.
 - Reconcile the root and interoperability-harness `go-identifier` v1.0.0
   checksums and all bootstrap-shadowed harness dependency checksums with their
   immutable public proxy and checksum database identities.
@@ -26,6 +30,9 @@ versioning once released.
   literal nil as the cryptographic-default selection.
 - Keep `Factory.Start`, `schedule.Adapter.Start`, and `schedule.Adapter.Run` as
   exact compatibility aliases for the new canonical names.
+- Retain the released `http`, `jsonrpc`, `queue`, `schedule`, `log`, and
+  `telemetry` paths as deprecated compatibility implementations with unchanged
+  exported type, reflection, sentinel, and runtime behavior.
 
 ### Documentation
 

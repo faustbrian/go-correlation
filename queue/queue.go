@@ -1,5 +1,8 @@
 // Package queue propagates correlation metadata through backend-neutral queue
 // metadata maps. Each Receive call creates a distinct delivery-attempt ID.
+//
+// Deprecated: use github.com/faustbrian/go-correlation/adapters/queue. This
+// package remains supported through the documented compatibility interval.
 package queue
 
 import (

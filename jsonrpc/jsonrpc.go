@@ -1,5 +1,8 @@
 // Package jsonrpc propagates correlation through an explicit JSON-RPC
 // metadata object. It never edits JSON-RPC protocol envelopes implicitly.
+//
+// Deprecated: use github.com/faustbrian/go-correlation/adapters/jsonrpc. This
+// package remains supported through the documented compatibility interval.
 package jsonrpc
 
 import (

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	correlation "github.com/faustbrian/go-correlation"
-	httpcorrelation "github.com/faustbrian/go-correlation/http"
+	httpcorrelation "github.com/faustbrian/go-correlation/adapters/http"
 )
 
 // Options configure webhook boundary trust and invalid input handling.

@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	correlation "github.com/faustbrian/go-correlation"
-	httpcorrelation "github.com/faustbrian/go-correlation/http"
-	jsonrpccorrelation "github.com/faustbrian/go-correlation/jsonrpc"
-	queuecorrelation "github.com/faustbrian/go-correlation/queue"
-	schedulecorrelation "github.com/faustbrian/go-correlation/schedule"
+	httpcorrelation "github.com/faustbrian/go-correlation/adapters/http"
+	jsonrpccorrelation "github.com/faustbrian/go-correlation/adapters/jsonrpc"
+	queuecorrelation "github.com/faustbrian/go-correlation/adapters/queue"
+	schedulecorrelation "github.com/faustbrian/go-correlation/adapters/schedule"
 	webhookcorrelation "github.com/faustbrian/go-correlation/webhook"
 )
 
