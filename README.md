@@ -7,7 +7,7 @@
 [![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-correlation.svg)](https://pkg.go.dev/github.com/faustbrian/go-correlation)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-correlation?sort=semver)](https://github.com/faustbrian/go-correlation/releases)
-[![Go](https://img.shields.io/badge/go-1.26.6-00ADD8?logo=go)](https://go.dev/)
+[![Go](https://img.shields.io/badge/go-1.27.0-00ADD8?logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 `correlation` is the transport-neutral owner of correlation, request, and
@@ -15,8 +15,8 @@ causation identifiers. It carries those semantics through HTTP, JSON-RPC,
 queues, scheduled work, webhooks, logs, and OpenTelemetry without creating a
 global propagator or redefining trace and idempotency concepts.
 
-The module is a stable v1 library. It requires and is tested with Go 1.26.6.
-Stable releases are selected through the `v1` module line.
+The module is a stable v1 library. It requires Go 1.26.6 and is tested with
+Go 1.27.0. Stable releases are selected through the `v1` module line.
 
 ## Install
 
