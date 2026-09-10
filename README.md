@@ -15,8 +15,8 @@ causation identifiers. It carries those semantics through HTTP, JSON-RPC,
 queues, scheduled work, webhooks, logs, and OpenTelemetry without creating a
 global propagator or redefining trace and idempotency concepts.
 
-The module is a stable v1 library. It requires Go 1.26.6 and is tested with
-Go 1.27.0. Stable releases are selected through the `v1` module line.
+The module is a stable v1 library. It requires and is tested with Go 1.27.0.
+Stable releases are selected through the `v1` module line.
 
 ## Install
 

@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "repository": "github.com/faustbrian/go-correlation",
-  "go_version": "1.26.6",
+  "go_version": "1.27.0",
   "modules": [
     {
       "directory": ".",
       "module_path": "github.com/faustbrian/go-correlation",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": ".",
@@ -275,7 +275,7 @@
           "github.com/faustbrian/go-telemetry"
         ],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
             "1.27.0"
           ]
@@ -366,7 +366,7 @@
     {
       "directory": "integration/siblings",
       "module_path": "github.com/faustbrian/go-correlation/integration/siblings",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [],
       "purpose": "Internal, non-releasable interoperability harness for the public correlation, HTTP request-ID, logging, and telemetry contracts.",
       "lifecycle": "internal",

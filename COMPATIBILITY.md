@@ -2,7 +2,7 @@
 
 The repository has one releasable root module,
 `github.com/faustbrian/go-correlation`, and follows semantic versioning. Root
-releases use `vX.Y.Z` tags. The module is stable at v1, requires Go 1.26.6,
+releases use `vX.Y.Z` tags. The module is stable at v1, requires Go 1.27.0,
 and is installed with `go get github.com/faustbrian/go-correlation@v1`.
 
 Before `v1`, minor releases MAY contain reviewed breaking changes, but every
