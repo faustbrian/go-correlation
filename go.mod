@@ -11,4 +11,5 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/jackc/pgx/v5 v5.10.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 )

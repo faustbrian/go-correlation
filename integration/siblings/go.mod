@@ -6,7 +6,7 @@ require (
 	github.com/faustbrian/go-correlation v1.0.0
 	github.com/faustbrian/go-http-middleware v1.0.0
 	github.com/faustbrian/go-log v1.0.0
-	github.com/faustbrian/go-telemetry v1.0.0
+	github.com/faustbrian/go-telemetry v1.1.1
 	go.opentelemetry.io/otel/trace v1.44.0
 )
 
