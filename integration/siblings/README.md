@@ -7,7 +7,7 @@ transport policy, observability backend, or application runtime.
 
 The harness belongs in the engineering inventory. It is not an installable
 library, has no independent release, and must not appear in the consumer
-catalog. Its supported toolchain is Go 1.26.6.
+catalog. Its tested toolchain is Go 1.27.0.
 
 ## What it proves
 
@@ -29,14 +29,14 @@ From this directory, run the deterministic in-memory scenarios against the
 repository's current root source through the intentional parent workspace:
 
 ```sh
-GOTOOLCHAIN=go1.26.6 go test ./...
+GOTOOLCHAIN=go1.27.0 go test ./...
 ```
 
 Disable workspace discovery to verify the exact published module versions in
 this module's `go.mod` and `go.sum`:
 
 ```sh
-GOTOOLCHAIN=go1.26.6 GOWORK=off go test ./...
+GOTOOLCHAIN=go1.27.0 GOWORK=off go test ./...
 ```
 
 From the repository root, `make check` includes the harness in the aggregate
