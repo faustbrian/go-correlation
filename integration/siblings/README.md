@@ -11,7 +11,7 @@ catalog. Its tested toolchain is Go 1.27.0.
 
 ## What it proves
 
-- A trusted request identifier created by `http-middleware/requestid` can be
+- A trusted request identifier created by `go-http-middleware/v2/requestid` can be
   adopted explicitly through `correlation/http/requestidbridge` without
   sharing a private context key.
 - Correlation attributes can be passed to `go-log` through standard `slog`

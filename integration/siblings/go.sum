@@ -4,8 +4,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/faustbrian/go-correlation v1.0.0 h1:2Z+tlY59nNBdlGFBadPTeuDo9/029IvS/DytFFxsMlk=
 github.com/faustbrian/go-correlation v1.0.0/go.mod h1:upLcV0fqKC8IUUx11R6c69CVwC3DO1EeXsw2BQU2PKE=
-github.com/faustbrian/go-http-middleware v1.0.0 h1:0eRjJA11oiuKPfGosGAiH1idOx2pWKqdpQmXUScv/Z8=
-github.com/faustbrian/go-http-middleware v1.0.0/go.mod h1:0pbY13Tp7yL9i5LKkZ4Y6sOTgmSSLyRTINj0flLtWyk=
+github.com/faustbrian/go-http-middleware/v2 v2.0.0 h1:Z+iAXAbV2/lfPybHFHGfK+//aUmnLFuDRG2kGswWIjg=
+github.com/faustbrian/go-http-middleware/v2 v2.0.0/go.mod h1:3nutDUpOvxPVCir43Ctq7d2rqtdUSiSmoGHIOObMJdc=
 github.com/faustbrian/go-identifier v1.0.0 h1:5lXZbS2wK4NelWv4ekRocwOwjkWt1ch/nh7TScxsFO4=
 github.com/faustbrian/go-identifier v1.0.0/go.mod h1:Q2yS7Hk4N4i9Wd3OmPQGh657SHtA1IjvtT4PllphNlY=
 github.com/faustbrian/go-log v1.0.0 h1:OFH4CgQyIB+WGlKxXlWuJgK178sAmVUKVQBl3FwJgSY=
