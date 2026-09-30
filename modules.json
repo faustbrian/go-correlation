@@ -310,10 +310,10 @@
           "release": "not-started"
         }
       },
-      "version": "1.1.0",
+      "version": "1.1.1",
       "tag_prefix": "v",
       "owned_dependencies": [
-        "github.com/faustbrian/go-identifier"
+        "github.com/faustbrian/go-identifier/v2"
       ],
       "reverse_owned_dependencies": [
         "github.com/faustbrian/go-cache",
