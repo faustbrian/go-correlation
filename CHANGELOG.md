@@ -5,6 +5,14 @@ versioning once released.
 
 ## Unreleased
 
+### Security
+
+- Use the published `go-identifier/v2` UUIDv4 generator for default hop IDs.
+  Its classified entropy failures omit caller-reader error text while the
+  correlation API, canonical UUIDv4 output, and generator ownership remain
+  unchanged. The published sibling integration harness retains its separate
+  historical v1.0.0 dependency.
+
 ## 1.1.0 - 2026-09-09
 
 ### Added

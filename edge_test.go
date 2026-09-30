@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	identifieruuid "github.com/faustbrian/go-identifier/uuid"
+	identifieruuid "github.com/faustbrian/go-identifier/v2/uuid"
 )
 
 type edgeCarrier map[string][]string
@@ -26,6 +26,12 @@ type failingGenerator struct {
 type errorReader struct{}
 
 func (errorReader) Read([]byte) (int, error) { return 0, errors.New("entropy") }
+
+type sensitiveReader struct{}
+
+func (sensitiveReader) Read([]byte) (int, error) {
+	return 0, errors.New("private entropy marker")
+}
 
 type countingReader struct{ reads int }
 
@@ -281,6 +287,17 @@ func TestFactoryReportsEveryGenerationFailure(t *testing.T) {
 	identifierGenerator := &uuidGenerator{generator: identifieruuid.NewV4Generator(errorReader{})}
 	if _, err := identifierGenerator.New(); err == nil {
 		t.Fatal("UUID entropy failure was hidden")
+	}
+}
+
+func TestDefaultGeneratorRedactsEntropySourceError(t *testing.T) {
+	factory := &Factory{generator: newBufferedUUIDGenerator(sensitiveReader{})}
+	values, err := factory.Create()
+	if !errors.Is(err, ErrGeneration) || values != (Values{}) {
+		t.Fatalf("Create() = %#v, %v", values, err)
+	}
+	if strings.Contains(err.Error(), "private entropy marker") {
+		t.Fatal("entropy source detail reached the factory error")
 	}
 }
 
