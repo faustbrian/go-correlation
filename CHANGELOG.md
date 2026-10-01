@@ -7,6 +7,10 @@ versioning once released.
 
 ### Changed
 
+- Update OpenTelemetry API and trace dependencies in both modules, and
+  metric dependencies in the sibling harness, to v1.46.0 while retaining
+  the harness SDK components at v1.45.0.
+
 - Keep reusable CI and its checked-out tooling on the same v1.8.5 source
   while retaining the checksum-verified v1.6.1 CLI bootstrap.
 
