@@ -183,7 +183,7 @@ compatibility, linting, Staticcheck, vulnerability analysis, and NilAway.
 See the [documentation index](docs/README.md), [security policy](SECURITY.md),
 and [changelog](CHANGELOG.md). Operational limits and performance caveats are
 in the [operations guide](docs/operations.md); symptom-driven recovery steps
-are in [troubleshooting](docs/troubleshooting.md). Adoption questions belong in
-[GitHub Discussions](https://github.com/faustbrian/go-correlation/discussions),
-and reproducible defects belong in
-[GitHub Issues](https://github.com/faustbrian/go-correlation/issues/new/choose).
+are in [troubleshooting](docs/troubleshooting.md). Start with the
+[FAQ](docs/faq.md) and [support guide](SUPPORT.md) for adoption questions and
+reproducible non-security defects. Follow the security policy for private
+vulnerability reports.
