@@ -6,7 +6,7 @@ require (
 	github.com/faustbrian/go-correlation v1.0.0
 	github.com/faustbrian/go-http-middleware/v2 v2.0.0
 	github.com/faustbrian/go-log v1.0.0
-	github.com/faustbrian/go-telemetry v1.0.0
+	github.com/faustbrian/go-telemetry v1.2.0
 	go.opentelemetry.io/otel/trace v1.46.0
 )
 
@@ -23,6 +23,5 @@ require (
 	go.opentelemetry.io/otel/metric v1.46.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.45.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.45.0 // indirect
-	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 )
