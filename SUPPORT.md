@@ -1,16 +1,16 @@
 # Support
 
-Use [GitHub Issues](https://github.com/faustbrian/go-correlation/issues/new/choose)
-for reproducible defects, documentation gaps, and bounded feature proposals.
-Include the module path and version, Go version, platform, minimal
-reproduction, expected behavior, actual behavior, and relevant non-secret
-logs.
+Start with the [FAQ](docs/faq.md),
+[troubleshooting guide](docs/troubleshooting.md), and
+[documentation index](docs/README.md) for adoption questions and defects.
+For a reproducible defect, collect the module path and version, Go version,
+platform, minimal reproduction, expected and actual behavior, and relevant
+non-secret logs.
 
-Use [GitHub Discussions](https://github.com/faustbrian/go-correlation/discussions)
-for adoption questions and design exploration. Use the private process in
-[`SECURITY.md`](SECURITY.md) for vulnerabilities.
+Use the private process in [`SECURITY.md`](SECURITY.md) for vulnerabilities.
 
 Support covers the stable v1 release line according to
-[`COMPATIBILITY.md`](COMPATIBILITY.md). The latest published release is
-`v1.0.0`; additive behavior on `main` is not a released contract until a new
-tag is published.
+[`COMPATIBILITY.md`](COMPATIBILITY.md). Find published versions in
+[GitHub Releases](https://github.com/faustbrian/go-correlation/releases).
+Additive behavior on `main` is not a released contract until a new tag is
+published.
