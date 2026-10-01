@@ -5,6 +5,11 @@ versioning once released.
 
 ## Unreleased
 
+### Changed
+
+- Keep reusable CI and its checked-out tooling on the same v1.8.5 source
+  while retaining the checksum-verified v1.6.1 CLI bootstrap.
+
 ### Security
 
 - Use the published `go-identifier/v2` UUIDv4 generator for default hop IDs.
