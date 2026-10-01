@@ -48,8 +48,7 @@ Use redacted disclosure by default. Keyed hashes require an explicit key and
 raw disclosure requires the explicit exposure mode. Metrics should use only
 `telemetry.MetricAttributes`, which emits fixed-cardinality presence flags.
 
-For reproducible non-security defects, use
-[GitHub Issues](https://github.com/faustbrian/go-correlation/issues/new/choose).
-Use [GitHub Discussions](https://github.com/faustbrian/go-correlation/discussions)
-for adoption questions and follow the [security policy](../SECURITY.md) for
-private vulnerability reports.
+For reproducible non-security defects, collect a minimal reproduction and
+non-secret diagnostics as described in the [support guide](../SUPPORT.md).
+Consult the [FAQ](faq.md) for adoption questions and follow the
+[security policy](../SECURITY.md) for private vulnerability reports.
