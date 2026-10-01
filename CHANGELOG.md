@@ -5,6 +5,8 @@ versioning once released.
 
 ## Unreleased
 
+## 1.1.2 - 2026-10-01
+
 ### Changed
 
 - Update OpenTelemetry API and trace dependencies in both modules, and
@@ -20,6 +22,10 @@ versioning once released.
   sibling integration harness, including the SDK fix for exporter
   configuration logging that could disclose endpoint URLs
   (GHSA-8wmf-6v46-5gfg).
+
+## 1.1.1 - 2026-09-30
+
+### Security
 
 - Use the published `go-identifier/v2` UUIDv4 generator for default hop IDs.
   Its classified entropy failures omit caller-reader error text while the
