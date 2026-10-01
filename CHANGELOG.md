@@ -12,6 +12,11 @@ versioning once released.
 
 ### Security
 
+- Upgrade OpenTelemetry dependencies to v1.45.0 in both the root module and
+  sibling integration harness, including the SDK fix for exporter
+  configuration logging that could disclose endpoint URLs
+  (GHSA-8wmf-6v46-5gfg).
+
 - Use the published `go-identifier/v2` UUIDv4 generator for default hop IDs.
   Its classified entropy failures omit caller-reader error text while the
   correlation API, canonical UUIDv4 output, and generator ownership remain
