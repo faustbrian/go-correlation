@@ -13,7 +13,7 @@ import (
 	correlationlog "github.com/faustbrian/go-correlation/log"
 	correlationtelemetry "github.com/faustbrian/go-correlation/telemetry"
 	"github.com/faustbrian/go-http-middleware/v2/requestid"
-	golog "github.com/faustbrian/go-log"
+	golog "github.com/faustbrian/go-log/v2"
 	"github.com/faustbrian/go-telemetry/testtelemetry"
 	"go.opentelemetry.io/otel/trace"
 )
