@@ -7,6 +7,13 @@ versioning once released.
 
 ### Changed
 
+- Adopt OpenTelemetry API and trace v1.47.0 in the root and sibling harness,
+  with metric and the newly selected log API at v1.47.0 in the harness.
+  Keep its SDK components at v1.45.0; this update does not adopt later SDK
+  fixes. The supplier Go 1.26 minimum remains below this module's Go 1.27
+  requirement. Typed attributes and trace identity remain compatible;
+  Stringer-based attribute diagnostics use the new JSON representation.
+
 - Select Identifier v2.0.1 for default UUIDv4 generation, retaining canonical
   IDs and classified entropy failures. Align indirect pgx v5.11.0 and ULID
   v2.1.2 dependencies in the root and sibling harness while preserving the
