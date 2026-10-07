@@ -5,6 +5,8 @@ versioning once released.
 
 ## Unreleased
 
+## 1.1.3 - 2026-10-08
+
 ### Changed
 
 - Adopt OpenTelemetry API and trace v1.47.0 in the root and sibling harness,
@@ -19,6 +21,10 @@ versioning once released.
   v2.1.2 dependencies in the root and sibling harness while preserving the
   harness's historical Identifier v1 dependency. Applications implementing
   custom `pgx.Rows` must provide the new `TypeMap()` method.
+
+- Update the owned sibling interoperability harness to the published Log
+  `/v2` API and align the companion catalog. This is a harness adoption,
+  not a production correlation logging migration.
 
 ## 1.1.2 - 2026-10-01
 
