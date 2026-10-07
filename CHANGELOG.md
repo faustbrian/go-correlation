@@ -5,6 +5,14 @@ versioning once released.
 
 ## Unreleased
 
+### Changed
+
+- Select Identifier v2.0.1 for default UUIDv4 generation, retaining canonical
+  IDs and classified entropy failures. Align indirect pgx v5.11.0 and ULID
+  v2.1.2 dependencies in the root and sibling harness while preserving the
+  harness's historical Identifier v1 dependency. Applications implementing
+  custom `pgx.Rows` must provide the new `TypeMap()` method.
+
 ## 1.1.2 - 2026-10-01
 
 ### Changed
