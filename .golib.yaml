@@ -1,6 +1,6 @@
 schema_version: 1
-tool_version: v1.6.1
-tool_checksums_sha256: 9a93685df9ad17819a9f96d0cc62e64750ea2b02e808a045d45ca6cf1e908a21
+tool_version: v2.1.1
+tool_checksums_sha256: 4e0a38f76cbff547541f3164a0e59e958cf2f62d7b5cea19d7a4d1c51fe5e977
 manifest:
   modules: modules.json
   packages: packages.json
@@ -34,6 +34,15 @@ api:
     - ./telemetry
     - ./webhook
 operations:
+- module: "."
+  gate: local-test
+  steps:
+  - type: go-test
+    packages: ["."]
+    run: '^TestDefaultFactoryAndContextAreConcurrentAndUnique$'
+    race: true
+    count: 1
+    timeout: 2m
 - module: "."
   gate: fuzz
   steps:

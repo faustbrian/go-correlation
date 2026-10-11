@@ -3,7 +3,7 @@
 [![CI](https://github.com/faustbrian/go-correlation/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/faustbrian/go-correlation/actions/workflows/ci.yml)
 [![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-correlation/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-100%25_required-blue)](CONTRIBUTING.md#verification)
-[![Mutation](https://img.shields.io/badge/mutation-100%25_required-blue)](CONTRIBUTING.md#verification)
+[![Mutation](https://img.shields.io/badge/mutation-local_or_scheduled-blue)](CONTRIBUTING.md#verification)
 [![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-correlation.svg)](https://pkg.go.dev/github.com/faustbrian/go-correlation)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-correlation?sort=semver)](https://github.com/faustbrian/go-correlation/releases)
@@ -15,7 +15,8 @@ causation identifiers. It carries those semantics through HTTP, JSON-RPC,
 queues, scheduled work, webhooks, logs, and OpenTelemetry without creating a
 global propagator or redefining trace and idempotency concepts.
 
-The module is a stable v1 library. It requires and is tested with Go 1.27.0.
+The module is a stable v1 library. Its public minimum is Go 1.27.0;
+development and CI use Go 1.27.2.
 Stable releases are selected through the `v1` module line.
 
 ## Install
@@ -166,19 +167,21 @@ disclosure is explicitly enabled, and metrics never contain identifier values.
 
 ## Verification
 
-Run the local release-equivalent gate:
+Run standalone root tests and bounded shared checks:
 
 ```sh
-make inventory
-make cohesion
+GOWORK=off go test ./...
 make check
 make ci
 ```
 
-It verifies formatting, module tidiness, vet, unit and integration tests, the
-race detector, 100% production statement coverage in every package, fuzz
-smoke tests, mutation tests, allocation benchmarks, documentation, API
-compatibility, linting, Staticcheck, vulnerability analysis, and NilAway.
+The Make routes use the public pinned verifier and retain a focused race test
+for concurrent default factory uniqueness. `make check-full` explicitly selects
+full assurance, including the configured fuzz, mutation, benchmark, API and
+integration contracts. Release qualification additionally requires its selected
+rehearsal; ordinary checks are not release-equivalent. See
+[CONTRIBUTING.md](CONTRIBUTING.md#verification) for focused fuzzing, optional
+single-package mutation and the workspace versus published harness distinction.
 
 See the [documentation index](docs/README.md), [security policy](SECURITY.md),
 and [changelog](CHANGELOG.md). Operational limits and performance caveats are

@@ -2,8 +2,8 @@
 
 The stable root module is installed as
 `github.com/faustbrian/go-correlation@v1`; root releases use `vX.Y.Z` tags.
-The module requires and is tested with exactly Go 1.27.0. Public API
-compatibility is checked against
+The module minimum remains Go 1.27.0; development and CI use Go 1.27.2.
+Public API compatibility is checked against
 [`api/baseline.txt`](../api/baseline.txt).
 
 The runtime dependencies are the published `identifier` module for secure

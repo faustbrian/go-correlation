@@ -1,7 +1,9 @@
 # Verification
 
-`golib check --all` runs the full configured local gate set. This alone
-does not prove release readiness: release metadata checks and clean module
+Ordinary `make check` and `make ci` use `golib check --local --all`, including
+the bounded count-1 root race test for default factory uniqueness and context
+identity. `make check-full` runs `golib check --all` for full configured assurance.
+This alone does not prove release readiness: release metadata checks and clean module
 resolution are exercised by the separate workflow dispatch with
 `release_dry_run` enabled. Release coverage is measured per production
 package and must be exactly 100.0%. Mutation tests invert trust,
