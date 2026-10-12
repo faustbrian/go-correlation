@@ -1,4 +1,7 @@
 // Package correlationschedule is the target-oriented path for scheduled-work correlation.
+// New supplies identity Create and metadata Enqueue/Receive, not job execution
+// or scheduler lifecycle. Maps and Factory generators remain caller-owned.
+// Aliases retain original type/sentinel identity, including reflection's path.
 // Its public types and behavior retain the released schedule package identities.
 package correlationschedule
 

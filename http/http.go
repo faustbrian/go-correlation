@@ -1,5 +1,10 @@
 // Package httpcorrelation explicitly propagates correlation metadata over
-// HTTP. Middleware installation and proxy trust remain application owned.
+// HTTP. New composes an explicit Factory with Wrap for inbound handlers and
+// Inject for outbound hops. Middleware installation, peer authentication,
+// transport execution, cancellation and retry remain application-owned.
+// Configuration may be shared when the generator/Trust callback are safe to
+// share; request/response header maps need exclusive mutation ownership.
+// No global middleware, goroutine, body consumption or shutdown is introduced.
 //
 // Deprecated: use github.com/faustbrian/go-correlation/adapters/http. This
 // package remains supported through the documented compatibility interval.
@@ -31,7 +36,8 @@ const (
 type InvalidPolicy uint8
 
 const (
-	// ReplaceInvalid discards every inbound value and creates a fresh root.
+	// ReplaceInvalid discards all metadata on extraction failure and creates a
+	// fresh root. With no Trust callback, inbound parsing is skipped entirely.
 	ReplaceInvalid InvalidPolicy = iota
 	// RejectInvalid returns HTTP 400 before application code runs.
 	RejectInvalid
@@ -42,12 +48,20 @@ var ErrInvalidOptions = errors.New("http correlation: invalid options")
 
 // Options configure immutable HTTP propagation policy.
 type Options struct {
-	Policy  correlation.Policy
+	// Policy configures inbound/outbound codec validation, independently of the
+	// supplied Factory's policy; zero selects correlation's defaults.
+	Policy correlation.Policy
+	// Invalid selects replacement (zero) or HTTP 400 for malformed metadata.
 	Invalid InvalidPolicy
-	Trust   func(*http.Request) bool
+	// Trust is a borrowed synchronous peer-authentication decision. Nil trusts
+	// no inbound IDs. It may run concurrently and can block or panic; the
+	// adapter adds no recovery, deadline or authentication of its own.
+	Trust func(*http.Request) bool
 }
 
 // Middleware owns explicit HTTP extraction, trust, context, and injection.
+// Use New; immutable configuration is shareable subject to Factory/Trust safety.
+// It owns neither request/response lifetime nor mutable header synchronization.
 type Middleware struct {
 	factory    *correlation.Factory
 	codec      *correlation.Codec
@@ -55,7 +69,9 @@ type Middleware struct {
 	options    Options
 }
 
-// New constructs an HTTP adapter without installing global middleware.
+// New constructs an HTTP adapter without installing global middleware. Nil
+// factory, unknown Invalid mode or invalid codec policy returns an error; factory
+// and Trust are borrowed. Supply a constructed Factory, not its zero value.
 func New(factory *correlation.Factory, options Options) (*Middleware, error) {
 	if factory == nil || options.Invalid > RejectInvalid {
 		return nil, ErrInvalidOptions
@@ -72,7 +88,13 @@ func New(factory *correlation.Factory, options Options) (*Middleware, error) {
 }
 
 // Wrap creates one fresh request ID per HTTP request. Valid inbound metadata
-// is preserved only when Trust explicitly accepts the immediate peer.
+// is preserved only when Trust explicitly accepts the immediate peer. Extraction
+// failure under RejectInvalid returns 400 before next; generation failure returns
+// 500. In both successful and rejected flows, canonical request/response header
+// keys are written; this is not removal of every alternate-cased map key.
+// Request headers must be writable/nonnil and exclusively owned for the call.
+// Wrap derives context but does not deep-copy the request, consume its body,
+// cancel work or recover callback/handler panics. Nil next yields a 500 handler.
 func (middleware *Middleware) Wrap(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if middleware == nil || next == nil || request == nil {
@@ -127,7 +149,11 @@ func (middleware *Middleware) receive(
 	return values, false, err
 }
 
-// Inject creates and injects the next outbound HTTP hop.
+// Inject creates and injects the next outbound HTTP hop without sending it.
+// It mutates request.Header (allocating it if nil), preserving unrelated fields
+// and refusing populated correlation fields through Codec. Failures return zero
+// Values but may allocate headers/consume generator state; no rollback occurs.
+// Nil request or Middleware returns ErrInvalidOptions.
 func (middleware *Middleware) Inject(request *http.Request, parent correlation.Values) (correlation.Values, error) {
 	if middleware == nil || request == nil {
 		return correlation.Values{}, ErrInvalidOptions
@@ -140,6 +166,9 @@ func (middleware *Middleware) Inject(request *http.Request, parent correlation.V
 
 type headerCarrier struct{ header http.Header }
 
+// Direct Header maps may contain noncanonical casing. Scan all case-equivalent
+// keys so conflicts cannot disappear behind Header.Get's canonical lookup; keep
+// one excess value to let Codec reject before collecting an unbounded slice.
 func (carrier headerCarrier) Values(key string) []string {
 	var values []string
 	for name, entries := range carrier.header {

@@ -1,3 +1,6 @@
+// Package siblings_test composes the separately pinned published correlation,
+// request-ID, log and telemetry contracts. This non-releasable module does not
+// substitute local sibling source or prove the root worktree's unreleased edits.
 package siblings_test
 
 import (

@@ -1,4 +1,8 @@
 // Package correlationjsonrpc is the target-oriented path for JSON-RPC correlation.
+// New supplies Send/Receive over duplicate-preserving Metadata, not envelopes
+// or protocol request IDs. Factory and maps remain caller-owned; no transport or
+// background lifecycle is introduced. Aliases intentionally preserve type and
+// sentinel identity, including reflection's original package path.
 // Its public types and behavior retain the released jsonrpc package identities.
 package correlationjsonrpc
 

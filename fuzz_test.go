@@ -6,6 +6,9 @@ import (
 	correlation "github.com/faustbrian/go-correlation"
 )
 
+// FuzzParseCorrelationID supplies arbitrary text under a 128-byte ASCII policy.
+// Successfully parsed text must be unchanged; rejection is not a validity oracle
+// beyond this package's policy, and arbitrary named-string casts are not tested.
 func FuzzParseCorrelationID(fuzz *testing.F) {
 	for _, seed := range []string{"flow", "request-123", "bad value", "control\n", "", "d1_stable"} {
 		fuzz.Add(seed)
@@ -18,6 +21,9 @@ func FuzzParseCorrelationID(fuzz *testing.F) {
 	})
 }
 
+// FuzzCarrierExtraction mutates three fields and at most sixteen added duplicate
+// strings. Successful extraction must reinject into a fresh carrier without error;
+// input allocation is outside the bounded eight-value Codec acceptance rule.
 func FuzzCarrierExtraction(fuzz *testing.F) {
 	fuzz.Add("flow", "request", "parent", "flow", uint8(1))
 	fuzz.Add("bad value", "", "control\n", "conflict", uint8(9))

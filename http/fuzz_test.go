@@ -9,6 +9,9 @@ import (
 	httpcorrelation "github.com/faustbrian/go-correlation/http"
 )
 
+// FuzzInboundHeaders supplies arbitrary correlation/request header strings to
+// RejectInvalid middleware with no trust callback. The oracle allows only 200 or
+// 400, not peer authentication, a real HTTP parser or response-header sanitation.
 func FuzzInboundHeaders(fuzz *testing.F) {
 	fuzz.Add("flow", "request")
 	fuzz.Add("bad value", "control\n")

@@ -1,8 +1,17 @@
 package correlation // import "github.com/faustbrian/go-correlation"
 
-Package correlation provides transport-neutral correlation, request, and
-causation identifiers. Identifiers are diagnostic metadata only; they are never
-authentication, authorization, tenancy, replay, or idempotency proof.
+Package correlation provides transport-neutral correlation, request,
+and causation identifiers. Identifiers are diagnostic metadata only; they are
+never authentication, authorization, tenancy, replay, or idempotency proof.
+Begin with NewFactory for root/hop values, NewCodec for transport metadata and
+an explicit InboundPolicy for receipt. Named strings and context storage do not
+themselves validate or redact IDs; use Parse helpers at untrusted boundaries.
+
+Values are copied structs containing immutable strings; codecs/strategies have
+immutable configuration. Factories borrow their generator and adapters borrow
+callbacks and mutable carriers, whose synchronization remains caller-owned. The
+package owns no background work, transport, retry, trace provider or shutdown.
+Calls are synchronous with no added deadline or panic recovery for caller code.
 
 CONSTANTS
 
@@ -52,84 +61,152 @@ FUNCTIONS
 
 func Disclose(label, value string, policy DisclosurePolicy) (string, error)
     Disclose renders an identifier according to an explicit observability
-    policy. label domain-separates correlation, request, and causation hashes.
+    policy. label domain-separates correlation, request, and causation hashes;
+    use fixed distinct labels, not attacker-controlled label framing. Hash mode
+    emits 16 HMAC-SHA-256 digest bytes as unpadded base64url (22 characters).
+    Neither label nor value is validated or size-limited here; ExposeDisclosure
+    returns value unchanged. After the key-size check, empty value returns
+    empty, nil even for an unknown mode or missing hash key. Invalid nonempty
+    policies return ErrInvalidDisclosure. Callers bound inputs and synchronize
+    borrowed keys.
 
 func WithValues(ctx context.Context, values Values) context.Context
-    WithValues returns a derived context carrying a copy of values.
+    WithValues returns a derived context carrying a copy of values under a
+    package-private key, replacing prior Values at that key without merging or
+    validation. It preserves parent cancellation/deadlines and panics for nil
+    ctx.
 
 
 TYPES
 
 type Carrier interface {
+	// Values returns all values for key, preserving duplicates; absence is a
+	// zero-length slice, distinct from a present empty string. Providers should
+	// bound collection before allocation for hostile transport metadata.
 	Values(key string) []string
+	// Set replaces key with one value. It must not change unrelated fields;
+	// injection preflights before invoking it but cannot undo provider failures.
 	Set(key, value string)
 }
     Carrier is an explicit transport metadata boundary. Values must return a
-    copy or immutable view. Set replaces one field with exactly one value.
+    copy or immutable view stable for the call. Set replaces one field with
+    exactly one value. The caller owns carrier lifetime, synchronization,
+    name matching and callback behavior; Codec provides no transaction, timeout
+    or panic recovery.
 
 type CausationID string
-    CausationID identifies the immediate parent request, message, or event.
+    CausationID identifies the immediate parent request, message, or event,
+    not an ancestry chain. Empty means absence; direct conversion bypasses
+    validation.
 
 func MustCausationID(value string, policy Policy) CausationID
     MustCausationID is ParseCausationID for static configuration and tests.
+    It panics with the validation error for invalid input or policy.
 
 func ParseCausationID(value string, policy Policy) (CausationID, error)
-    ParseCausationID validates and returns a causation identifier.
+    ParseCausationID validates nonempty ASCII text exactly as
+    ParseCorrelationID, returning an empty ID and ErrInvalidID-wrapping error on
+    failure.
 
 func (id CausationID) String() string
+    String returns the underlying text without validation or redaction.
 
 type Codec struct {
 	// Has unexported fields.
 }
-    Codec injects and extracts typed values without assigning trust.
+    Codec injects and extracts typed values without assigning trust. Construct
+    with NewCodec; immutable configuration can be shared, but carriers must be
+    synchronized independently. Zero Codec values are not configured codecs.
 
 func NewCodec(options CodecOptions) (*Codec, error)
-    NewCodec validates and copies carrier configuration.
+    NewCodec validates and copies carrier configuration, returning nil and an
+    ErrInvalidCarrier-wrapping error on invalid policy or duplicate/invalid
+    names. Field uniqueness is exact, not case-folded; custom names must also be
+    distinct under the selected transport's own name comparison.
 
 func (codec *Codec) Extract(carrier Carrier) (Values, error)
     Extract parses values but deliberately does not decide whether to trust
     them. Pass the result to Factory.Accept with an explicit InboundPolicy.
+    Absent fields are allowed; at most eight repeated values must all be equal
+    and nonempty. Invalid/conflicting metadata returns zero Values, not a
+    partial parse. Nil codec or nil/typed-nil carrier returns ErrInvalidCarrier.
+    No writes occur.
 
 func (codec *Codec) Inject(carrier Carrier, values Values) error
     Inject installs non-empty values and refuses to overwrite any populated
-    field, even when the existing value is malformed.
+    field, even when the existing value is malformed. Empty output fields are
+    skipped, including overwrite checks. All nonempty values/overwrites are
+    checked before the first Set; this is not atomic against concurrent carrier
+    mutation or a provider panic. Validation/overwrite failure makes no Set
+    calls.
 
 type CodecOptions struct {
-	Policy           Policy
+	// Policy validates carried identifier text; zero selects default limits.
+	Policy Policy
+	// CorrelationField selects a distinct ASCII name of at most 64 bytes;
+	// empty selects DefaultCorrelationField.
 	CorrelationField string
-	RequestField     string
-	CausationField   string
+	// RequestField is a distinct ASCII name; empty selects DefaultRequestField.
+	RequestField string
+	// CausationField is a distinct ASCII name; empty selects DefaultCausationField.
+	CausationField string
 }
     CodecOptions configure immutable carrier field names and validation.
 
 type CorrelationID string
-    CorrelationID groups work in one logical interaction or workflow.
+    CorrelationID groups work in one logical interaction or workflow. Its empty
+    value represents absence in Values, though ParseCorrelationID rejects empty
+    input. Direct string conversion bypasses validation and supplies no trust.
 
 func MustCorrelationID(value string, policy Policy) CorrelationID
     MustCorrelationID is ParseCorrelationID for static configuration and tests.
+    It panics with the validation error for invalid input or policy.
 
 func ParseCorrelationID(value string, policy Policy) (CorrelationID, error)
-    ParseCorrelationID validates and returns a correlation identifier.
+    ParseCorrelationID accepts nonempty canonical ASCII text unchanged under
+    policy. Invalid alphabet, length or policy returns an empty ID and an error
+    wrapping ErrInvalidID, without rejected input. It does not assign trust.
 
 func (id CorrelationID) String() string
+    String returns the underlying text without validation or redaction.
 
 type Deterministic struct {
 	// Has unexported fields.
 }
     Deterministic derives linkable IDs for an explicitly stable workflow. It is
     never selected by Factory defaults and should be keyed for private inputs.
+    Construct with NewDeterministic; configuration/key are immutable and safe
+    for concurrent derivation with stable call inputs. Shorter output retains
+    fewer digest bits; no uniqueness or authentication guarantee is provided.
 
 func NewDeterministic(options DeterministicOptions) (*Deterministic, error)
     NewDeterministic validates and copies deterministic strategy configuration.
+    Invalid options return nil wrapping ErrInvalidDerivation. The copied key
+    remains retained for the strategy lifetime; modifying the caller key has no
+    effect.
 
 func (strategy *Deterministic) Derive(input []byte) (CorrelationID, error)
-    Derive hashes input with length-delimited, versioned domain separation.
+    Derive consumes stable borrowed input synchronously using HMAC-SHA-256 over
+    the package marker, big-endian version and length-delimited domain/input,
+    then prefixes and truncates unpadded base64url digest text to configured
+    Length. Nil strategy, empty or over-1-MiB input returns empty ID with
+    ErrInvalidDerivation. Input is not retained. Repeated configuration/input is
+    linkable; empty-key low entropy input spaces can be enumerated. There is no
+    context/cancellation seam.
 
 type DeterministicOptions struct {
-	Domain  string
+	// Domain is nonempty canonical ASCII text, at most 128 bytes, separating
+	// independently interpreted stable workflows.
+	Domain string
+	// Version is positive and changes both the HMAC transcript and d<version>_
+	// output prefix. Key/domain/version changes alter stable IDs.
 	Version uint32
-	Key     []byte
-	Length  int
+	// Key is copied at construction, at most 1024 bytes. Empty selects HMAC
+	// with an empty key, not a private/random strategy; no erasure API is owned.
+	Key []byte
+	// Length counts total output bytes including d<version>_. It must retain
+	// 16 through 43 unpadded base64url digest characters; zero is invalid.
+	Length int
 }
     DeterministicOptions configure an explicitly opted-in stable strategy.
 
@@ -141,23 +218,34 @@ const (
 	RedactDisclosure DisclosureMode = iota
 	// HashDisclosure emits a keyed, domain-separated stable token.
 	HashDisclosure
-	// ExposeDisclosure emits validated raw identifier text.
+	// ExposeDisclosure emits raw identifier text unchanged; Disclose itself does
+	// not validate it. Use only for explicitly approved diagnostic data.
 	ExposeDisclosure
 )
 type DisclosurePolicy struct {
+	// Mode selects redaction (zero), keyed hashing or explicit raw exposure.
 	Mode DisclosureMode
-	Key  []byte
+	// Key is borrowed during Disclose, never copied/erased; keep it stable for
+	// concurrent calls. Hash mode requires nonempty key, and every mode rejects
+	// more than 1024 key bytes. This is separate from deterministic workflow keys.
+	Key []byte
 }
     DisclosurePolicy must explicitly opt into linkable or raw output.
 
 type ExternalID struct {
 	// Has unexported fields.
 }
-    ExternalID is an optional typed external identifier with explicit source and
-    trust metadata. It is not implicitly promoted to any correlation ID.
+    ExternalID is an optional typed external identifier with explicit source
+    and trust metadata. It is not implicitly promoted to any correlation ID.
+    Its immutable strings are safe to copy/share; zero ExternalID is absent
+    metadata, not a successfully validated identifier. Accessors expose
+    unredacted values.
 
 func NewExternalID(options ExternalIDOptions) (ExternalID, error)
-    NewExternalID validates and copies external metadata.
+    NewExternalID validates external metadata in Kind, Source, Value order,
+    returning zero ExternalID and an ErrInvalidExternalID-wrapping error without
+    input on failure. String values are immutable; caller trust is stored,
+    not verified.
 
 func (external ExternalID) Kind() string
     Kind returns the external identifier's declared semantic kind.
@@ -172,32 +260,56 @@ func (external ExternalID) Value() string
     Value returns the validated external identifier text.
 
 type ExternalIDOptions struct {
-	Kind    string
-	Value   string
-	Source  string
+	// Kind declares semantic meaning using nonempty ASCII text up to 64 bytes.
+	Kind string
+	// Value is nonempty identifier text validated under Policy.
+	Value string
+	// Source declares a system/transport name using ASCII text up to 64 bytes.
+	Source string
+	// Trusted records the caller's decision; no source authentication is run.
 	Trusted bool
-	Policy  Policy
+	// Policy applies to Value only, not the fixed Kind/Source limits.
+	Policy Policy
 }
     ExternalIDOptions require the caller to state type, source, and trust.
 
 type Factory struct {
 	// Has unexported fields.
 }
-    Factory creates fresh hop identifiers without global mutable state.
+    Factory creates hop identifiers without global mutable state. Use
+    NewFactory; its configuration is immutable, but concurrent use requires
+    a concurrency-safe Generator (the built-in UUID generator is safe).
+    No uniqueness ledger or collision detection is owned; custom generators
+    determine those properties.
 
 func NewFactory(options FactoryOptions) (*Factory, error)
-    NewFactory constructs a factory. The default generator uses crypto/rand.
+    NewFactory validates policy, then constructs a factory. The default is a
+    buffered crypto/rand-backed UUIDv4 generator from Identifier v2.0.1. Its
+    canonical 36-byte output is trusted, even with Policy.MaxLength below 36.
+    Custom generators are retained and their successful output is validated.
+    Invalid configuration returns nil with ErrInvalidFactory; no generator is
+    run.
 
 func (factory *Factory) Accept(inbound Values, policy InboundPolicy) (Values, error)
     Accept starts a receiving hop. No inbound value is used unless its exact
-    semantic trust is enabled.
+    semantic trust is enabled. Missing trusted values still select generation;
+    inbound causation is ignored. Successful receipt generates a request ID;
+    errors return zero Values on failure without rolling back consumed generator
+    state. Use a constructed nonnil factory: a nil receiver panics when
+    TrustCorrelation is true and inbound.CorrelationID is nonempty; other nil
+    paths fail generation.
 
 func (factory *Factory) Create() (Values, error)
-    Create creates a new correlation and request identifier.
+    Create generates correlation first, then request identity, with no
+    causation. It returns zero Values on any ErrGeneration-wrapping failure,
+    retaining custom generator causes; already consumed generator state is not
+    rolled back. Nil or uninitialized factories return ErrGeneration here.
 
 func (factory *Factory) Next(parent Values) (Values, error)
     Next preserves correlation, creates a request ID, and makes the prior
-    request the immediate cause.
+    request the immediate cause. Parent causation is ignored. Parent validation
+    precedes generation; failures return zero Values wrapping ErrGeneration and
+    the validation/generator cause. The receiver must be nonnil.
 
 func (factory *Factory) Start() (Values, error)
     Start creates a new correlation and request identifier.
@@ -205,31 +317,51 @@ func (factory *Factory) Start() (Values, error)
     Deprecated: use Create.
 
 type FactoryOptions struct {
-	Policy    Policy
+	// Policy validates parents, trusted inbound values and custom generated
+	// results; it does not truncate/revalidate built-in 36-byte UUID results.
+	Policy Policy
+	// Generator is borrowed for the Factory lifetime, never copied or closed.
+	// Literal nil selects the cryptographic default; typed nil is invalid.
 	Generator Generator
 }
     FactoryOptions configure an immutable Factory.
 
 type Generator interface {
+	// New returns nonempty text accepted by Factory's Policy or an error.
+	// Factories validate successful custom results, wrap errors without
+	// redaction, and neither recover panics nor impose cancellation.
 	New() (string, error)
 }
     Generator supplies canonical random identifier text. It is structurally
-    compatible with identifier.Generator[string] from identifier.
+    compatible with identifier.Generator[string] from identifier. Factory
+    borrows it: implementations own synchronization, randomness/uniqueness and
+    lifetime. Calls are synchronous, may consume state on failure and must not
+    assume retry.
 
 type GeneratorFunc func() (string, error)
-    GeneratorFunc adapts a function to Generator.
+    GeneratorFunc adapts a borrowed synchronous function to Generator.
+    Nil functions panic when called directly and are rejected by NewFactory.
 
 func (function GeneratorFunc) New() (string, error)
-    New calls the wrapped function.
+    New calls the wrapped function, preserving its result, error and panic.
+    The function must supply its own synchronization when shared.
 
 type InboundPolicy struct {
-	TrustCorrelation        bool
+	// TrustCorrelation permits retaining a validated nonempty inbound workflow
+	// ID. It records the caller's boundary decision, not authentication.
+	TrustCorrelation bool
+	// TrustRequestAsCausation permits a validated inbound request ID as the
+	// immediate cause. Inbound causation itself is always ignored.
 	TrustRequestAsCausation bool
 }
     InboundPolicy explicitly identifies which inbound semantics cross a trust
     boundary. Request IDs are never preserved because each hop gets a new one.
 
 type Policy struct {
+	// MaxLength is the maximum ASCII byte length, not a normalization target.
+	// Zero selects 128; positive values through 1024 are supported. Other
+	// values reject parsing/construction. Built-in Factory UUID generation is
+	// trusted separately and always emits its 36-byte representation.
 	MaxLength int
 }
     Policy bounds and validates an identifier. The zero value accepts the
@@ -239,41 +371,65 @@ type Propagator struct {
 	// Has unexported fields.
 }
     Propagator explicitly composes hop generation with a transport codec.
+    It retains both dependencies, owns no carrier or transport resources and
+    inherits Factory's generator synchronization and Carrier's caller-owned
+    mutation rules.
 
 func NewPropagator(factory *Factory, codec *Codec) (*Propagator, error)
-    NewPropagator rejects ambient or incomplete propagation configuration.
+    NewPropagator rejects nil dependencies with ErrInvalidPropagator. Supply
+    constructed Factory/Codec values; it does not validate their internal state.
 
 func (propagator *Propagator) Receive(carrier Carrier, policy InboundPolicy) (Values, error)
     Receive extracts untrusted metadata and applies an explicit trust policy
-    while creating a fresh delivery-attempt request ID.
+    while creating a fresh delivery-attempt request ID. Extraction checks every
+    carried field before trust, so malformed untrusted metadata still fails
+    here. Failures return zero Values with the extraction/generation cause
+    preserved.
 
 func (propagator *Propagator) Send(carrier Carrier, parent Values) (Values, error)
-    Send creates the next hop before injecting its values.
+    Send creates the next hop before injecting its values. Failure returns zero
+    Values and may have consumed generator state; injection errors are wrapped.
+    It performs no send, retry or acknowledgment, and cannot roll back
+    callbacks.
 
 type RequestID string
-    RequestID identifies one transport request or delivery attempt.
+    RequestID identifies one transport request or delivery attempt. Empty means
+    absent metadata; direct conversion bypasses ParseRequestID validation.
 
 func MustRequestID(value string, policy Policy) RequestID
     MustRequestID is ParseRequestID for static configuration and tests.
+    It panics with the validation error for invalid input or policy.
 
 func ParseRequestID(value string, policy Policy) (RequestID, error)
-    ParseRequestID validates and returns a request identifier.
+    ParseRequestID validates nonempty ASCII text exactly as ParseCorrelationID,
+    returning an empty ID and ErrInvalidID-wrapping error on failure.
 
 func (id RequestID) String() string
+    String returns the underlying text without validation or redaction.
 
 type Values struct {
+	// CorrelationID is workflow identity, preserved only by explicit hop/trust
+	// policy. Assignment does not validate it.
 	CorrelationID CorrelationID
-	RequestID     RequestID
-	CausationID   CausationID
+	// RequestID is this hop/attempt identity, newly generated at each boundary.
+	RequestID RequestID
+	// CausationID is the immediate parent's request identity, or empty at a root.
+	CausationID CausationID
 }
     Values carries the three deliberately distinct identifier semantics.
 
 func FromContext(ctx context.Context) (Values, bool)
-    FromContext returns values installed by WithValues.
+    FromContext returns a copy of Values installed by WithValues. Nil or absent
+    context returns zero Values, false; explicitly stored zero Values returns
+    true. It does not validate, authenticate or redact the stored strings.
 
 package httpcorrelation // import "github.com/faustbrian/go-correlation/adapters/http"
 
 Package httpcorrelation is the target-oriented path for HTTP correlation.
+New supplies Wrap/Inject over caller-owned requests; it performs no network
+operation or authentication. Sharing inherits the Factory and Trust callback's
+safety; header maps require caller synchronization. The implementation/package
+identities remain at the compatibility path rather than new wrapper types.
 Its public types and behavior retain the released http package identities.
 
 CONSTANTS
@@ -287,7 +443,8 @@ const (
 	CausationHeader = legacy.CausationHeader
 )
 const (
-	// ReplaceInvalid discards every inbound value and creates a fresh root.
+	// ReplaceInvalid discards metadata on extraction failure and creates a fresh
+	// root; nil Trust skips inbound parsing entirely.
 	ReplaceInvalid = legacy.ReplaceInvalid
 	// RejectInvalid returns HTTP 400 before application code runs.
 	RejectInvalid = legacy.RejectInvalid
@@ -316,7 +473,11 @@ type Options = legacy.Options
 package correlationjsonrpc // import "github.com/faustbrian/go-correlation/adapters/jsonrpc"
 
 Package correlationjsonrpc is the target-oriented path for JSON-RPC correlation.
-Its public types and behavior retain the released jsonrpc package identities.
+New supplies Send/Receive over duplicate-preserving Metadata, not envelopes
+or protocol request IDs. Factory and maps remain caller-owned; no transport
+or background lifecycle is introduced. Aliases intentionally preserve type and
+sentinel identity, including reflection's original package path. Its public
+types and behavior retain the released jsonrpc package identities.
 
 CONSTANTS
 
@@ -357,6 +518,9 @@ package correlationotel // import "github.com/faustbrian/go-correlation/adapters
 
 Package correlationotel projects correlation metadata into OpenTelemetry
 attributes and links without treating correlation IDs as trace or span IDs.
+Attributes and Link use explicit disclosure; MetricAttributes emits presence
+booleans only. This package owns no provider, span recording, global propagator,
+W3C baggage or shutdown. Returned slices are owned; keys are borrowed per call.
 
 VARIABLES
 
@@ -368,11 +532,15 @@ FUNCTIONS
 
 func Attributes(values correlation.Values, policy correlation.DisclosurePolicy) ([]attribute.KeyValue, error)
     Attributes returns bounded span/link attributes under an explicit disclosure
-    policy.
+    policy, in correlation/request/causation order. The new slice has at most
+    three members; errors return nil without partial attributes. Empty Values
+    skips policy validation; explicit raw exposure does not validate text.
 
 func Link(spanContext trace.SpanContext, values correlation.Values, policy correlation.DisclosurePolicy) (trace.Link, error)
     Link attaches correlation attributes to a telemetry-owned SpanContext. The
     supplied trace and span IDs are neither derived from nor replaced by IDs.
+    Invalid SpanContext fails before disclosure with ErrInvalidSpanContext;
+    other failures return a zero Link. No span is created, recorded or ended.
 
 func MetricAttributes(values correlation.Values) []attribute.KeyValue
     MetricAttributes exposes fixed-cardinality presence signals only. Raw,
@@ -380,9 +548,12 @@ func MetricAttributes(values correlation.Values) []attribute.KeyValue
 
 package correlationqueue // import "github.com/faustbrian/go-correlation/adapters/queue"
 
-Package correlationqueue is the target-oriented path for queue correlation
-propagation. Its public types and behavior retain the released queue package
-identities.
+Package correlationqueue is the target-oriented path for queue
+correlation propagation. New supplies metadata Send/Receive, not backend
+enqueue/acknowledgment or retry. Maps and Factory generator synchronization
+remain caller-owned. Aliases retain original type/sentinel identity, including
+reflection's package path. Its public types and behavior retain the released
+queue package identities.
 
 VARIABLES
 
@@ -404,8 +575,11 @@ type Options = legacy.Options
 package correlationschedule // import "github.com/faustbrian/go-correlation/adapters/schedule"
 
 Package correlationschedule is the target-oriented path for scheduled-work
-correlation. Its public types and behavior retain the released schedule package
-identities.
+correlation. New supplies identity Create and metadata Enqueue/Receive,
+not job execution or scheduler lifecycle. Maps and Factory generators remain
+caller-owned. Aliases retain original type/sentinel identity, including
+reflection's path. Its public types and behavior retain the released schedule
+package identities.
 
 VARIABLES
 
@@ -426,18 +600,29 @@ type Options = legacy.Options
 
 package correlationslog // import "github.com/faustbrian/go-correlation/adapters/slog"
 
-Package correlationslog provides bounded slog correlation attributes.
+Package correlationslog provides at most three diagnostic slog attributes
+through Attrs, without installing a logger or handler. Disclosure defaults to
+redaction; raw/hash values stay caller-reviewed and must not become metrics.
+Calls own returned slices but borrow disclosure keys for synchronous use.
 
 FUNCTIONS
 
 func Attrs(values correlation.Values, policy correlation.DisclosurePolicy) ([]slog.Attr, error)
     Attrs returns only non-empty identifier attributes under an explicit
-    disclosure policy.
+    disclosure policy, ordered correlation, request, causation. It returns a new
+    slice or nil on error, without partial attributes. All-empty Values returns
+    an empty slice without validating policy; exposed text is not validated
+    here.
 
 package httpcorrelation // import "github.com/faustbrian/go-correlation/http"
 
 Package httpcorrelation explicitly propagates correlation metadata over HTTP.
-Middleware installation and proxy trust remain application owned.
+New composes an explicit Factory with Wrap for inbound handlers and Inject
+for outbound hops. Middleware installation, peer authentication, transport
+execution, cancellation and retry remain application-owned. Configuration may
+be shared when the generator/Trust callback are safe to share; request/response
+header maps need exclusive mutation ownership. No global middleware, goroutine,
+body consumption or shutdown is introduced.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/http. This package
 remains supported through the documented compatibility interval.
@@ -465,7 +650,8 @@ type InvalidPolicy uint8
     InvalidPolicy controls malformed or ambiguous inbound metadata.
 
 const (
-	// ReplaceInvalid discards every inbound value and creates a fresh root.
+	// ReplaceInvalid discards all metadata on extraction failure and creates a
+	// fresh root. With no Trust callback, inbound parsing is skipped entirely.
 	ReplaceInvalid InvalidPolicy = iota
 	// RejectInvalid returns HTTP 400 before application code runs.
 	RejectInvalid
@@ -474,28 +660,54 @@ type Middleware struct {
 	// Has unexported fields.
 }
     Middleware owns explicit HTTP extraction, trust, context, and injection.
+    Use New; immutable configuration is shareable subject to Factory/Trust
+    safety. It owns neither request/response lifetime nor mutable header
+    synchronization.
 
 func New(factory *correlation.Factory, options Options) (*Middleware, error)
     New constructs an HTTP adapter without installing global middleware.
+    Nil factory, unknown Invalid mode or invalid codec policy returns an error;
+    factory and Trust are borrowed. Supply a constructed Factory, not its zero
+    value.
 
 func (middleware *Middleware) Inject(request *http.Request, parent correlation.Values) (correlation.Values, error)
-    Inject creates and injects the next outbound HTTP hop.
+    Inject creates and injects the next outbound HTTP hop without sending it.
+    It mutates request.Header (allocating it if nil), preserving unrelated
+    fields and refusing populated correlation fields through Codec. Failures
+    return zero Values but may allocate headers/consume generator state;
+    no rollback occurs. Nil request or Middleware returns ErrInvalidOptions.
 
 func (middleware *Middleware) Wrap(next http.Handler) http.Handler
     Wrap creates one fresh request ID per HTTP request. Valid inbound metadata
     is preserved only when Trust explicitly accepts the immediate peer.
+    Extraction failure under RejectInvalid returns 400 before next;
+    generation failure returns 500. In both successful and rejected flows,
+    canonical request/response header keys are written; this is not removal of
+    every alternate-cased map key. Request headers must be writable/nonnil and
+    exclusively owned for the call. Wrap derives context but does not deep-copy
+    the request, consume its body, cancel work or recover callback/handler
+    panics. Nil next yields a 500 handler.
 
 type Options struct {
-	Policy  correlation.Policy
+	// Policy configures inbound/outbound codec validation, independently of the
+	// supplied Factory's policy; zero selects correlation's defaults.
+	Policy correlation.Policy
+	// Invalid selects replacement (zero) or HTTP 400 for malformed metadata.
 	Invalid InvalidPolicy
-	Trust   func(*http.Request) bool
+	// Trust is a borrowed synchronous peer-authentication decision. Nil trusts
+	// no inbound IDs. It may run concurrently and can block or panic; the
+	// adapter adds no recovery, deadline or authentication of its own.
+	Trust func(*http.Request) bool
 }
     Options configure immutable HTTP propagation policy.
 
 package requestidbridge // import "github.com/faustbrian/go-correlation/http/requestidbridge"
 
 Package requestidbridge integrates explicitly with request ID middleware such as
-http-middleware/requestid without importing hidden context keys.
+http-middleware/requestid without importing hidden context keys. Adopt validates
+the selected lookup's request ID under explicit trust and derives a context.
+It performs no middleware installation or authentication; lookup lifetime,
+concurrency, blocking and panic behavior remain caller-owned.
 
 VARIABLES
 
@@ -513,18 +725,27 @@ var (
 FUNCTIONS
 
 func Adopt(ctx context.Context, values correlation.Values, lookup Lookup, options Options) (context.Context, correlation.Values, error)
-    Adopt validates a middleware request ID, refuses overwrite, and returns a
-    derived context containing the complete correlation Values.
+    Adopt validates a middleware request ID, refuses overwrite, and returns
+    a derived context containing the complete supplied Values with that
+    request ID. Existing parent-context Values are not merged or consulted for
+    overwrite. Errors return the original ctx and zero Values. Nil ctx/lookup is
+    invalid; other supplied identity fields are neither validated nor promoted
+    to trust.
 
 
 TYPES
 
 type Lookup func(context.Context) (string, bool)
     Lookup matches a bound call to requestid.FromContext. The application keeps
-    ownership of which middleware package and Kind it selects.
+    ownership of which middleware package and Kind it selects. The callback is
+    invoked synchronously after trust/overwrite checks, without panic recovery.
 
 type Options struct {
-	Policy  correlation.Policy
+	// Policy validates the looked-up request ID only; other supplied Values
+	// fields are preserved without validation.
+	Policy correlation.Policy
+	// Trusted must explicitly accept the lookup's authenticated boundary.
+	// False fails before calling lookup; the bridge does not verify trust.
 	Trusted bool
 }
     Options require explicit trust for the middleware-owned context value.
@@ -532,7 +753,10 @@ type Options struct {
 package jsonrpc // import "github.com/faustbrian/go-correlation/jsonrpc"
 
 Package jsonrpc propagates correlation through an explicit JSON-RPC metadata
-object. It never edits JSON-RPC protocol envelopes implicitly.
+object. New composes Send/Receive over caller-owned Metadata; it never
+edits protocol envelopes or JSON-RPC request IDs. Callers decode envelopes,
+preserve duplicate metadata members, authenticate trust and synchronize maps.
+No transport, background work, retry or cancellation is introduced.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/jsonrpc. This
 package remains supported through the documented compatibility interval.
@@ -562,22 +786,43 @@ TYPES
 type Adapter struct {
 	// Has unexported fields.
 }
-    Adapter explicitly sends and receives JSON-RPC metadata.
+    Adapter explicitly sends and receives JSON-RPC metadata. Use New;
+    configuration is immutable but concurrent sharing inherits Factory generator
+    safety and requires independently synchronized metadata maps/bytes.
 
 func New(factory *correlation.Factory, options Options) (*Adapter, error)
-    New constructs a JSON-RPC metadata adapter.
+    New constructs a JSON-RPC metadata adapter, retaining the supplied Factory.
+    Nil factory returns ErrInvalidOptions; invalid codec options preserve
+    Codec's error. No metadata is read and no generator is called at
+    construction.
 
 func (adapter *Adapter) Receive(metadata Metadata, trusted bool) (correlation.Values, error)
-    Receive validates metadata and creates a fresh receiving request ID.
+    Receive validates metadata and creates a fresh receiving request ID. Nil
+    metadata means absent fields. Each selected field allows at most eight raw
+    values, each at most 1026 encoded bytes including quotes/escapes/whitespace;
+    whole maps and unrelated members are not bounded by this check. Invalid
+    JSON or incompatible types return ErrMalformedMetadata; decoded empty
+    text (including null) fails Codec. Trust enables only correlation and
+    request-as-causation after all selected metadata is validated. No mutation
+    or protocol-ID mapping occurs.
 
 func (adapter *Adapter) Send(metadata Metadata, parent correlation.Values) (correlation.Values, error)
-    Send creates and injects a child JSON-RPC metadata hop.
+    Send creates and injects a child JSON-RPC metadata hop, replacing only
+    selected absent keys with JSON strings. Nil metadata/adapter returns
+    ErrInvalidOptions; other failures return zero Values and may already consume
+    generator state. Metadata mutation follows Codec preflight, not a transport
+    transaction.
 
 type Metadata map[string][]json.RawMessage
     Metadata preserves repeated JSON members supplied by a strict envelope
-    decoder so conflicting duplicates cannot be silently collapsed.
+    decoder so conflicting duplicates cannot be silently collapsed. Assignment
+    aliases the map and RawMessage byte slices. Keep them stable during
+    receipt; Send replaces only selected keys. Whole-envelope allocation is
+    caller-bounded.
 
 type Options struct {
+	// Codec selects root validation and distinct exact metadata names; empty
+	// names select this package's default fields.
 	Codec correlation.CodecOptions
 }
     Options configure JSON-RPC metadata validation and names.
@@ -585,7 +830,9 @@ type Options struct {
 package log // import "github.com/faustbrian/go-correlation/log"
 
 Package log provides bounded slog attributes compatible with log's standard
-log/slog composition API.
+log/slog composition API. Attrs forwards to adapters/slog and owns no logger,
+handler, background resource or shutdown. Returned slices are owned; disclosure
+keys are borrowed, and direct raw exposure does not validate IDs.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/slog. This package
 remains supported through the documented compatibility interval.
@@ -594,12 +841,16 @@ FUNCTIONS
 
 func Attrs(values correlation.Values, policy correlation.DisclosurePolicy) ([]slog.Attr, error)
     Attrs returns only non-empty identifier attributes under an explicit
-    disclosure policy.
+    disclosure policy. It preserves adapters/slog ordering, errors, empty-value
+    skipping and newly allocated output; it does not emit a log record.
 
 package queue // import "github.com/faustbrian/go-correlation/queue"
 
 Package queue propagates correlation metadata through backend-neutral queue
-metadata maps. Each Receive call creates a distinct delivery-attempt ID.
+metadata maps. New provides Send/Receive; each receipt invokes request identity
+generation anew. Maps are caller-owned and must be stable for reads/exclusively
+owned for writes. No queue backend, authentication, acknowledgment, execution,
+retry, goroutine or cancellation mechanism is introduced.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/queue. This
 package remains supported through the documented compatibility interval.
@@ -615,19 +866,31 @@ TYPES
 type Adapter struct {
 	// Has unexported fields.
 }
-    Adapter explicitly sends and receives queue metadata.
+    Adapter explicitly sends and receives queue metadata. Construct with New;
+    shareability depends on the retained Factory generator and caller-owned
+    maps.
 
 func New(factory *correlation.Factory, options Options) (*Adapter, error)
-    New constructs a queue adapter.
+    New constructs a queue adapter retaining factory. Nil factory returns
+    ErrInvalidOptions; codec validation errors are returned without
+    recategorizing.
 
 func (adapter *Adapter) Receive(metadata map[string]string, trusted bool) (correlation.Values, error)
     Receive creates a fresh delivery-attempt ID. trusted must be explicitly true
     only after the queue backend's metadata boundary has been authenticated.
+    Nil metadata means absence; metadata is never mutated. Malformed untrusted
+    fields still fail extraction before trust. The received causation field is
+    not reused; accepted inbound request identity becomes the immediate cause.
 
 func (adapter *Adapter) Send(metadata map[string]string, parent correlation.Values) (correlation.Values, error)
     Send creates a message hop and injects it into an application-owned map.
+    Nil metadata/adapter is invalid; populated selected fields refuse overwrite.
+    Errors return zero Values but consumed generation state is not restored.
+    It does not enqueue or persist a message.
 
 type Options struct {
+	// Codec selects exact metadata names and identifier limits. Empty options
+	// choose the root Codec defaults, separately from Factory policy.
 	Codec correlation.CodecOptions
 }
     Options configure queue metadata validation and field names.
@@ -636,7 +899,10 @@ package schedule // import "github.com/faustbrian/go-correlation/schedule"
 
 Package schedule provides explicit correlation lifecycle helpers for
 scheduled work. Independent invocations start independent workflows unless
-application-owned metadata is deliberately propagated.
+application-owned metadata is deliberately propagated. New composes Create,
+Enqueue and Receive over an explicit Factory/queue codec. It owns no scheduler,
+job execution, acknowledgment, retry or background work; metadata and generator
+synchronization remain with their callers.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/schedule. This
 package remains supported through the documented compatibility interval.
@@ -652,20 +918,28 @@ TYPES
 type Adapter struct {
 	// Has unexported fields.
 }
-    Adapter starts independent runs and explicitly propagates scheduled jobs.
+    Adapter starts independent identity roots and propagates scheduled metadata,
+    without starting jobs. Use New; it inherits Factory/queue ownership rules.
 
 func New(factory *correlation.Factory, options Options) (*Adapter, error)
-    New constructs a scheduled-work adapter.
+    New constructs a scheduled-work adapter retaining factory. Nil factory is
+    ErrInvalidOptions; queue codec errors are preserved. Nothing is scheduled.
 
 func (adapter *Adapter) Create() (correlation.Values, error)
     Create begins an independent scheduler invocation with no implicit derived
     or stable workflow identity.
 
 func (adapter *Adapter) Enqueue(metadata map[string]string, parent correlation.Values) (correlation.Values, error)
-    Enqueue creates a child scheduled-work message.
+    Enqueue creates child scheduled-work metadata in the supplied nonnil map,
+    refusing populated selected fields. It performs no enqueue/persistence;
+    errors return zero Values and may consume generation state before injection
+    fails.
 
 func (adapter *Adapter) Receive(metadata map[string]string, trusted bool) (correlation.Values, error)
-    Receive receives explicitly trusted scheduler metadata as a fresh attempt.
+    Receive receives scheduler metadata as a fresh attempt. Trust must be
+    decided outside the adapter; nil metadata means absence. It delegates queue
+    receipt validation/causation semantics and neither mutates the map nor
+    executes a job.
 
 func (adapter *Adapter) Run(metadata map[string]string, trusted bool) (correlation.Values, error)
     Run receives explicitly trusted scheduler metadata as a fresh attempt.
@@ -679,6 +953,8 @@ func (adapter *Adapter) Start() (correlation.Values, error)
     Deprecated: use Create.
 
 type Options struct {
+	// Queue configures metadata names/validation used by Enqueue and Receive;
+	// Create uses only the supplied Factory.
 	Queue queuecorrelation.Options
 }
     Options configure optional scheduled metadata propagation.
@@ -686,7 +962,9 @@ type Options struct {
 package telemetry // import "github.com/faustbrian/go-correlation/telemetry"
 
 Package telemetry links correlation metadata to OpenTelemetry without treating
-correlation IDs as trace or span IDs.
+correlation IDs as trace or span IDs. It forwards to adapters/otel, owning no
+provider/span/global propagator or shutdown. Projection outputs are owned and
+Links copy SpanContext values; disclosure keys are borrowed per call.
 
 Deprecated: use github.com/faustbrian/go-correlation/adapters/otel. This package
 remains supported through the documented compatibility interval.
@@ -701,11 +979,13 @@ FUNCTIONS
 
 func Attributes(values correlation.Values, policy correlation.DisclosurePolicy) ([]attribute.KeyValue, error)
     Attributes returns bounded span/link attributes under an explicit disclosure
-    policy.
+    policy, forwarding adapters/otel ordering, errors and empty-value skipping.
+    Raw exposure does not itself validate ID text.
 
 func Link(spanContext trace.SpanContext, values correlation.Values, policy correlation.DisclosurePolicy) (trace.Link, error)
     Link attaches correlation attributes to a telemetry-owned SpanContext. The
     supplied trace and span IDs are neither derived from nor replaced by IDs.
+    It forwards adapters/otel validation and error precedence, creating no span.
 
 func MetricAttributes(values correlation.Values) []attribute.KeyValue
     MetricAttributes exposes fixed-cardinality presence signals only. Raw,
@@ -714,6 +994,9 @@ func MetricAttributes(values correlation.Values) []attribute.KeyValue
 package webhook // import "github.com/faustbrian/go-correlation/webhook"
 
 Package webhook provides an explicit webhook-named HTTP correlation adapter.
+New composes Send and Wrap over HTTP policy without webhook signing, delivery,
+body access, retry or replay protection. Peer trust, resource lifetime and
+request/header synchronization remain application-owned.
 
 TYPES
 
@@ -721,15 +1004,23 @@ type Adapter struct {
 	// Has unexported fields.
 }
     Adapter keeps webhook propagation explicit at send and receive call sites.
+    Construct with New; nil Adapter receivers panic on Send/Wrap. Sharing
+    inherits HTTP Factory/Trust callback safety and does not synchronize header
+    maps.
 
 func New(factory *correlation.Factory, options Options) (*Adapter, error)
     New constructs an explicit webhook correlation adapter.
 
 func (adapter *Adapter) Send(request *http.Request, parent correlation.Values) (correlation.Values, error)
-    Send creates and injects a fresh outbound webhook request hop.
+    Send creates and injects an outbound webhook request hop without sending it.
+    It delegates HTTP Inject's header ownership, overwrite and failure
+    semantics; it does not create signatures or authenticate a receiver.
 
 func (adapter *Adapter) Wrap(next http.Handler) http.Handler
-    Wrap receives a webhook through the configured explicit trust boundary.
+    Wrap receives a webhook through the configured HTTP trust/invalid-input
+    policy. It delegates HTTP Wrap's canonical header writes and derived
+    context, not webhook authentication or body processing; callbacks/handlers
+    are borrowed.
 
 type Options = httpcorrelation.Options
     Options configure webhook boundary trust and invalid input handling.

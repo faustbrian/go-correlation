@@ -16,7 +16,8 @@ const (
 	RedactDisclosure DisclosureMode = iota
 	// HashDisclosure emits a keyed, domain-separated stable token.
 	HashDisclosure
-	// ExposeDisclosure emits validated raw identifier text.
+	// ExposeDisclosure emits raw identifier text unchanged; Disclose itself does
+	// not validate it. Use only for explicitly approved diagnostic data.
 	ExposeDisclosure
 )
 
@@ -25,12 +26,22 @@ var ErrInvalidDisclosure = errors.New("correlation: invalid disclosure policy")
 
 // DisclosurePolicy must explicitly opt into linkable or raw output.
 type DisclosurePolicy struct {
+	// Mode selects redaction (zero), keyed hashing or explicit raw exposure.
 	Mode DisclosureMode
-	Key  []byte
+	// Key is borrowed during Disclose, never copied/erased; keep it stable for
+	// concurrent calls. Hash mode requires nonempty key, and every mode rejects
+	// more than 1024 key bytes. This is separate from deterministic workflow keys.
+	Key []byte
 }
 
 // Disclose renders an identifier according to an explicit observability
-// policy. label domain-separates correlation, request, and causation hashes.
+// policy. label domain-separates correlation, request, and causation hashes;
+// use fixed distinct labels, not attacker-controlled label framing. Hash mode
+// emits 16 HMAC-SHA-256 digest bytes as unpadded base64url (22 characters).
+// Neither label nor value is validated or size-limited here; ExposeDisclosure
+// returns value unchanged. After the key-size check, empty value returns empty,
+// nil even for an unknown mode or missing hash key. Invalid nonempty policies
+// return ErrInvalidDisclosure. Callers bound inputs and synchronize borrowed keys.
 func Disclose(label, value string, policy DisclosurePolicy) (string, error) {
 	if len(policy.Key) > 1024 {
 		return "", ErrInvalidDisclosure

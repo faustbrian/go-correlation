@@ -1,5 +1,8 @@
 // Package requestidbridge integrates explicitly with request ID middleware
 // such as http-middleware/requestid without importing hidden context keys.
+// Adopt validates the selected lookup's request ID under explicit trust and
+// derives a context. It performs no middleware installation or authentication;
+// lookup lifetime, concurrency, blocking and panic behavior remain caller-owned.
 package requestidbridge
 
 import (
@@ -22,17 +25,25 @@ var (
 )
 
 // Lookup matches a bound call to requestid.FromContext. The application keeps
-// ownership of which middleware package and Kind it selects.
+// ownership of which middleware package and Kind it selects. The callback is
+// invoked synchronously after trust/overwrite checks, without panic recovery.
 type Lookup func(context.Context) (string, bool)
 
 // Options require explicit trust for the middleware-owned context value.
 type Options struct {
-	Policy  correlation.Policy
+	// Policy validates the looked-up request ID only; other supplied Values
+	// fields are preserved without validation.
+	Policy correlation.Policy
+	// Trusted must explicitly accept the lookup's authenticated boundary.
+	// False fails before calling lookup; the bridge does not verify trust.
 	Trusted bool
 }
 
 // Adopt validates a middleware request ID, refuses overwrite, and returns a
-// derived context containing the complete correlation Values.
+// derived context containing the complete supplied Values with that request ID.
+// Existing parent-context Values are not merged or consulted for overwrite.
+// Errors return the original ctx and zero Values. Nil ctx/lookup is invalid;
+// other supplied identity fields are neither validated nor promoted to trust.
 func Adopt(ctx context.Context, values correlation.Values, lookup Lookup, options Options) (context.Context, correlation.Values, error) {
 	if ctx == nil || lookup == nil {
 		return ctx, correlation.Values{}, ErrInvalidLookup

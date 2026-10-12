@@ -1,4 +1,7 @@
 // Package correlationqueue is the target-oriented path for queue correlation propagation.
+// New supplies metadata Send/Receive, not backend enqueue/acknowledgment or
+// retry. Maps and Factory generator synchronization remain caller-owned. Aliases
+// retain original type/sentinel identity, including reflection's package path.
 // Its public types and behavior retain the released queue package identities.
 package correlationqueue
 

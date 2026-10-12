@@ -1,5 +1,8 @@
 // Package correlationotel projects correlation metadata into OpenTelemetry
 // attributes and links without treating correlation IDs as trace or span IDs.
+// Attributes and Link use explicit disclosure; MetricAttributes emits presence
+// booleans only. This package owns no provider, span recording, global propagator,
+// W3C baggage or shutdown. Returned slices are owned; keys are borrowed per call.
 package correlationotel
 
 import (
@@ -14,7 +17,9 @@ import (
 var ErrInvalidSpanContext = errors.New("correlation telemetry: invalid span context")
 
 // Attributes returns bounded span/link attributes under an explicit
-// disclosure policy.
+// disclosure policy, in correlation/request/causation order. The new slice has
+// at most three members; errors return nil without partial attributes. Empty
+// Values skips policy validation; explicit raw exposure does not validate text.
 func Attributes(values correlation.Values, policy correlation.DisclosurePolicy) ([]attribute.KeyValue, error) {
 	inputs := []struct {
 		key   string
@@ -40,6 +45,8 @@ func Attributes(values correlation.Values, policy correlation.DisclosurePolicy) 
 
 // Link attaches correlation attributes to a telemetry-owned SpanContext. The
 // supplied trace and span IDs are neither derived from nor replaced by IDs.
+// Invalid SpanContext fails before disclosure with ErrInvalidSpanContext; other
+// failures return a zero Link. No span is created, recorded or ended.
 func Link(spanContext trace.SpanContext, values correlation.Values, policy correlation.DisclosurePolicy) (trace.Link, error) {
 	if !spanContext.IsValid() {
 		return trace.Link{}, ErrInvalidSpanContext

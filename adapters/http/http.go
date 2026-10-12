@@ -1,4 +1,8 @@
 // Package httpcorrelation is the target-oriented path for HTTP correlation.
+// New supplies Wrap/Inject over caller-owned requests; it performs no network
+// operation or authentication. Sharing inherits the Factory and Trust callback's
+// safety; header maps require caller synchronization. The implementation/package
+// identities remain at the compatibility path rather than new wrapper types.
 // Its public types and behavior retain the released http package identities.
 package httpcorrelation
 
@@ -22,7 +26,8 @@ const (
 type InvalidPolicy = legacy.InvalidPolicy
 
 const (
-	// ReplaceInvalid discards every inbound value and creates a fresh root.
+	// ReplaceInvalid discards metadata on extraction failure and creates a fresh
+	// root; nil Trust skips inbound parsing entirely.
 	ReplaceInvalid = legacy.ReplaceInvalid
 	// RejectInvalid returns HTTP 400 before application code runs.
 	RejectInvalid = legacy.RejectInvalid

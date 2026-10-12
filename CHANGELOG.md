@@ -5,6 +5,13 @@ versioning once released.
 
 ## Unreleased
 
+### Documentation
+
+- Clarify identifier validation versus generation, raw disclosure, carrier
+  preflight, trust decisions and adapter ownership. Document method-specific
+  nil/zero behavior, deterministic key/truncation limits and compatibility
+  alias identity without changing propagation or the public API.
+
 ## 1.1.3 - 2026-10-08
 
 ### Changed

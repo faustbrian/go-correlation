@@ -1,4 +1,7 @@
-// Package correlationslog provides bounded slog correlation attributes.
+// Package correlationslog provides at most three diagnostic slog attributes
+// through Attrs, without installing a logger or handler. Disclosure defaults to
+// redaction; raw/hash values stay caller-reviewed and must not become metrics.
+// Calls own returned slices but borrow disclosure keys for synchronous use.
 package correlationslog
 
 import (
@@ -8,7 +11,9 @@ import (
 )
 
 // Attrs returns only non-empty identifier attributes under an explicit
-// disclosure policy.
+// disclosure policy, ordered correlation, request, causation. It returns a new
+// slice or nil on error, without partial attributes. All-empty Values returns an
+// empty slice without validating policy; exposed text is not validated here.
 func Attrs(values correlation.Values, policy correlation.DisclosurePolicy) ([]slog.Attr, error) {
 	inputs := []struct {
 		key   string

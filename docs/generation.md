@@ -9,6 +9,11 @@ testing or a different identifier family. `NewFactory` borrows that supplied
 generator for the complete lifetime of the factory. The caller must keep it
 valid for that lifetime and must provide any synchronization its `New` method
 requires; the factory does not copy, close, or otherwise take ownership of it.
+Custom results are checked against the factory policy. The built-in generator's
+canonical 36-byte UUID output is trusted without that check, so a configured
+maximum below 36 does not truncate or reject its generated IDs; codec/parent
+validation still applies its own limit.
+
 A literal nil generator selects the cryptographic default. A non-nil
 `Generator` interface containing a typed-nil value is invalid and
 `NewFactory` reports `ErrInvalidFactory`.

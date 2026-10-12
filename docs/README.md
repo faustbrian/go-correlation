@@ -38,6 +38,7 @@ remain deprecated compatibility implementations and identity authorities.
 - [FAQ](faq.md)
 - [Compatibility](compatibility.md)
 - [Verification](verification.md) and [assurance](assurance.md)
+- [Source documentation audit](source-documentation-audit.md)
 - [Sibling interoperability harness](../integration/siblings/README.md)
 
 ## Project and ecosystem

@@ -20,38 +20,60 @@ var (
 )
 
 // Generator supplies canonical random identifier text. It is structurally
-// compatible with identifier.Generator[string] from identifier.
+// compatible with identifier.Generator[string] from identifier. Factory borrows
+// it: implementations own synchronization, randomness/uniqueness and lifetime.
+// Calls are synchronous, may consume state on failure and must not assume retry.
 type Generator interface {
+	// New returns nonempty text accepted by Factory's Policy or an error.
+	// Factories validate successful custom results, wrap errors without
+	// redaction, and neither recover panics nor impose cancellation.
 	New() (string, error)
 }
 
-// GeneratorFunc adapts a function to Generator.
+// GeneratorFunc adapts a borrowed synchronous function to Generator. Nil
+// functions panic when called directly and are rejected by NewFactory.
 type GeneratorFunc func() (string, error)
 
-// New calls the wrapped function.
+// New calls the wrapped function, preserving its result, error and panic.
+// The function must supply its own synchronization when shared.
 func (function GeneratorFunc) New() (string, error) { return function() }
 
 // FactoryOptions configure an immutable Factory.
 type FactoryOptions struct {
-	Policy    Policy
+	// Policy validates parents, trusted inbound values and custom generated
+	// results; it does not truncate/revalidate built-in 36-byte UUID results.
+	Policy Policy
+	// Generator is borrowed for the Factory lifetime, never copied or closed.
+	// Literal nil selects the cryptographic default; typed nil is invalid.
 	Generator Generator
 }
 
 // InboundPolicy explicitly identifies which inbound semantics cross a trust
 // boundary. Request IDs are never preserved because each hop gets a new one.
 type InboundPolicy struct {
-	TrustCorrelation        bool
+	// TrustCorrelation permits retaining a validated nonempty inbound workflow
+	// ID. It records the caller's boundary decision, not authentication.
+	TrustCorrelation bool
+	// TrustRequestAsCausation permits a validated inbound request ID as the
+	// immediate cause. Inbound causation itself is always ignored.
 	TrustRequestAsCausation bool
 }
 
-// Factory creates fresh hop identifiers without global mutable state.
+// Factory creates hop identifiers without global mutable state. Use NewFactory;
+// its configuration is immutable, but concurrent use requires a concurrency-safe
+// Generator (the built-in UUID generator is safe). No uniqueness ledger or
+// collision detection is owned; custom generators determine those properties.
 type Factory struct {
 	policy            Policy
 	generator         Generator
 	validateGenerated bool
 }
 
-// NewFactory constructs a factory. The default generator uses crypto/rand.
+// NewFactory validates policy, then constructs a factory. The default is a
+// buffered crypto/rand-backed UUIDv4 generator from Identifier v2.0.1. Its
+// canonical 36-byte output is trusted, even with Policy.MaxLength below 36.
+// Custom generators are retained and their successful output is validated.
+// Invalid configuration returns nil with ErrInvalidFactory; no generator is run.
 func NewFactory(options FactoryOptions) (*Factory, error) {
 	if err := validatePolicy(options.Policy); err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrInvalidFactory, err)
@@ -72,6 +94,9 @@ func NewFactory(options FactoryOptions) (*Factory, error) {
 
 type uuidGenerator struct{ generator *identifieruuid.V4Generator }
 
+// Identifier's generator owns synchronization around this borrowed buffer. Keeping
+// the 4 KiB buffer per factory amortizes entropy reads without ambient state;
+// TestDefaultGeneratorAmortizesEntropyReads protects that boundary.
 func newBufferedUUIDGenerator(reader io.Reader) *uuidGenerator {
 	return &uuidGenerator{generator: identifieruuid.NewV4Generator(
 		bufio.NewReaderSize(reader, defaultEntropyBufferSize),
@@ -86,7 +111,10 @@ func (generator *uuidGenerator) New() (string, error) {
 	return id.String(), nil
 }
 
-// Create creates a new correlation and request identifier.
+// Create generates correlation first, then request identity, with no causation.
+// It returns zero Values on any ErrGeneration-wrapping failure, retaining custom
+// generator causes; already consumed generator state is not rolled back. Nil or
+// uninitialized factories return ErrGeneration here.
 func (factory *Factory) Create() (Values, error) {
 	correlationID, err := factory.newCorrelationID()
 	if err != nil {
@@ -107,7 +135,9 @@ func (factory *Factory) Start() (Values, error) {
 }
 
 // Next preserves correlation, creates a request ID, and makes the prior
-// request the immediate cause.
+// request the immediate cause. Parent causation is ignored. Parent validation
+// precedes generation; failures return zero Values wrapping ErrGeneration and
+// the validation/generator cause. The receiver must be nonnil.
 func (factory *Factory) Next(parent Values) (Values, error) {
 	correlationID, err := ParseCorrelationID(parent.CorrelationID.String(), factory.policy)
 	if err != nil {
@@ -129,7 +159,11 @@ func (factory *Factory) Next(parent Values) (Values, error) {
 }
 
 // Accept starts a receiving hop. No inbound value is used unless its exact
-// semantic trust is enabled.
+// semantic trust is enabled. Missing trusted values still select generation;
+// inbound causation is ignored. Successful receipt generates a request ID; errors return
+// zero Values on failure without rolling back consumed generator state. Use a
+// constructed nonnil factory: a nil receiver panics when TrustCorrelation is true
+// and inbound.CorrelationID is nonempty; other nil paths fail generation.
 func (factory *Factory) Accept(inbound Values, policy InboundPolicy) (Values, error) {
 	var correlationID CorrelationID
 	var err error
@@ -183,6 +217,8 @@ func (factory *Factory) generate() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("%w: %w", ErrGeneration, err)
 	}
+	// The default UUID path is a trusted canonical producer. This deliberately
+	// differs from custom output validation, including policy length checks.
 	if factory.validateGenerated {
 		if err := validate(value, factory.policy); err != nil {
 			return "", fmt.Errorf("%w: %w", ErrGeneration, err)

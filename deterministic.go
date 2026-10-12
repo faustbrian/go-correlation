@@ -15,14 +15,25 @@ var ErrInvalidDerivation = errors.New("correlation: invalid deterministic deriva
 
 // DeterministicOptions configure an explicitly opted-in stable strategy.
 type DeterministicOptions struct {
-	Domain  string
+	// Domain is nonempty canonical ASCII text, at most 128 bytes, separating
+	// independently interpreted stable workflows.
+	Domain string
+	// Version is positive and changes both the HMAC transcript and d<version>_
+	// output prefix. Key/domain/version changes alter stable IDs.
 	Version uint32
-	Key     []byte
-	Length  int
+	// Key is copied at construction, at most 1024 bytes. Empty selects HMAC
+	// with an empty key, not a private/random strategy; no erasure API is owned.
+	Key []byte
+	// Length counts total output bytes including d<version>_. It must retain
+	// 16 through 43 unpadded base64url digest characters; zero is invalid.
+	Length int
 }
 
 // Deterministic derives linkable IDs for an explicitly stable workflow. It is
 // never selected by Factory defaults and should be keyed for private inputs.
+// Construct with NewDeterministic; configuration/key are immutable and safe for
+// concurrent derivation with stable call inputs. Shorter output retains fewer
+// digest bits; no uniqueness or authentication guarantee is provided.
 type Deterministic struct {
 	domain  string
 	version uint32
@@ -31,6 +42,8 @@ type Deterministic struct {
 }
 
 // NewDeterministic validates and copies deterministic strategy configuration.
+// Invalid options return nil wrapping ErrInvalidDerivation. The copied key remains
+// retained for the strategy lifetime; modifying the caller key has no effect.
 func NewDeterministic(options DeterministicOptions) (*Deterministic, error) {
 	prefix := fmt.Sprintf("d%d_", options.Version)
 	maximum := len(prefix) + base64.RawURLEncoding.EncodedLen(sha256.Size)
@@ -61,7 +74,12 @@ func NewDeterministic(options DeterministicOptions) (*Deterministic, error) {
 	}, nil
 }
 
-// Derive hashes input with length-delimited, versioned domain separation.
+// Derive consumes stable borrowed input synchronously using HMAC-SHA-256 over
+// the package marker, big-endian version and length-delimited domain/input, then
+// prefixes and truncates unpadded base64url digest text to configured Length.
+// Nil strategy, empty or over-1-MiB input returns empty ID with ErrInvalidDerivation.
+// Input is not retained. Repeated configuration/input is linkable; empty-key low
+// entropy input spaces can be enumerated. There is no context/cancellation seam.
 func (strategy *Deterministic) Derive(input []byte) (CorrelationID, error) {
 	if strategy == nil || len(input) == 0 || len(input) > 1<<20 {
 		return "", fmt.Errorf("%w: input", ErrInvalidDerivation)

@@ -25,21 +25,35 @@ var (
 )
 
 // Carrier is an explicit transport metadata boundary. Values must return a
-// copy or immutable view. Set replaces one field with exactly one value.
+// copy or immutable view stable for the call. Set replaces one field with exactly
+// one value. The caller owns carrier lifetime, synchronization, name matching
+// and callback behavior; Codec provides no transaction, timeout or panic recovery.
 type Carrier interface {
+	// Values returns all values for key, preserving duplicates; absence is a
+	// zero-length slice, distinct from a present empty string. Providers should
+	// bound collection before allocation for hostile transport metadata.
 	Values(key string) []string
+	// Set replaces key with one value. It must not change unrelated fields;
+	// injection preflights before invoking it but cannot undo provider failures.
 	Set(key, value string)
 }
 
 // CodecOptions configure immutable carrier field names and validation.
 type CodecOptions struct {
-	Policy           Policy
+	// Policy validates carried identifier text; zero selects default limits.
+	Policy Policy
+	// CorrelationField selects a distinct ASCII name of at most 64 bytes;
+	// empty selects DefaultCorrelationField.
 	CorrelationField string
-	RequestField     string
-	CausationField   string
+	// RequestField is a distinct ASCII name; empty selects DefaultRequestField.
+	RequestField string
+	// CausationField is a distinct ASCII name; empty selects DefaultCausationField.
+	CausationField string
 }
 
-// Codec injects and extracts typed values without assigning trust.
+// Codec injects and extracts typed values without assigning trust. Construct
+// with NewCodec; immutable configuration can be shared, but carriers must be
+// synchronized independently. Zero Codec values are not configured codecs.
 type Codec struct {
 	policy           Policy
 	correlationField string
@@ -47,7 +61,10 @@ type Codec struct {
 	causationField   string
 }
 
-// NewCodec validates and copies carrier configuration.
+// NewCodec validates and copies carrier configuration, returning nil and an
+// ErrInvalidCarrier-wrapping error on invalid policy or duplicate/invalid names.
+// Field uniqueness is exact, not case-folded; custom names must also be distinct
+// under the selected transport's own name comparison.
 func NewCodec(options CodecOptions) (*Codec, error) {
 	if err := validatePolicy(options.Policy); err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrInvalidCarrier, err)
@@ -80,6 +97,9 @@ func NewCodec(options CodecOptions) (*Codec, error) {
 
 // Extract parses values but deliberately does not decide whether to trust
 // them. Pass the result to Factory.Accept with an explicit InboundPolicy.
+// Absent fields are allowed; at most eight repeated values must all be equal and
+// nonempty. Invalid/conflicting metadata returns zero Values, not a partial parse.
+// Nil codec or nil/typed-nil carrier returns ErrInvalidCarrier. No writes occur.
 func (codec *Codec) Extract(carrier Carrier) (Values, error) {
 	if codec == nil || nilLike(carrier) {
 		return Values{}, fmt.Errorf("%w: nil codec or carrier", ErrInvalidCarrier)
@@ -114,7 +134,10 @@ func (codec *Codec) Extract(carrier Carrier) (Values, error) {
 }
 
 // Inject installs non-empty values and refuses to overwrite any populated
-// field, even when the existing value is malformed.
+// field, even when the existing value is malformed. Empty output fields are
+// skipped, including overwrite checks. All nonempty values/overwrites are checked
+// before the first Set; this is not atomic against concurrent carrier mutation
+// or a provider panic. Validation/overwrite failure makes no Set calls.
 func (codec *Codec) Inject(carrier Carrier, values Values) error {
 	if codec == nil || nilLike(carrier) {
 		return fmt.Errorf("%w: nil codec or carrier", ErrInvalidCarrier)
@@ -138,6 +161,8 @@ func (codec *Codec) Inject(carrier Carrier, values Values) error {
 			return fmt.Errorf("%w: %s", ErrCarrierOverwrite, field.name)
 		}
 	}
+	// Separate preflight prevents a later invalid/occupied field from leaving
+	// earlier fields written. Carrier callbacks themselves are not transactional.
 	for _, field := range fields {
 		if field.value != "" {
 			carrier.Set(field.name, field.value)
@@ -166,6 +191,8 @@ func (codec *Codec) one(carrier Carrier, field string) (string, error) {
 	return first, nil
 }
 
+// Interface presence alone does not distinguish a usable callback/carrier from
+// typed-nil pointers, maps, slices, channels or functions (lifecycle_test.go).
 func nilLike(value any) bool {
 	if value == nil {
 		return true

@@ -161,6 +161,10 @@ func TestAdapterAppliesIndependentDefaultsAndAcceptsExactEncodedLimit(t *testing
 	}
 }
 
+// FuzzCustomMetadataCarrier supplies arbitrary raw JSON strings, duplicate counts
+// (at most sixteen added) and explicit trust over custom fields. Receipt must
+// either reject or return complete correlation/request values; this is metadata
+// validation, not a JSON-RPC envelope or protocol-ID conformance oracle.
 func FuzzCustomMetadataCarrier(fuzz *testing.F) {
 	fuzz.Add(`"flow"`, `"request"`, `"flow"`, uint8(1), true)
 	fuzz.Add(`123`, `"control\n"`, `null`, uint8(9), false)

@@ -1,5 +1,7 @@
 // Package telemetry links correlation metadata to OpenTelemetry without
-// treating correlation IDs as trace or span IDs.
+// treating correlation IDs as trace or span IDs. It forwards to adapters/otel,
+// owning no provider/span/global propagator or shutdown. Projection outputs are
+// owned and Links copy SpanContext values; disclosure keys are borrowed per call.
 //
 // Deprecated: use github.com/faustbrian/go-correlation/adapters/otel. This
 // package remains supported through the documented compatibility interval.
@@ -16,13 +18,15 @@ import (
 var ErrInvalidSpanContext = correlationotel.ErrInvalidSpanContext
 
 // Attributes returns bounded span/link attributes under an explicit
-// disclosure policy.
+// disclosure policy, forwarding adapters/otel ordering, errors and empty-value
+// skipping. Raw exposure does not itself validate ID text.
 func Attributes(values correlation.Values, policy correlation.DisclosurePolicy) ([]attribute.KeyValue, error) {
 	return correlationotel.Attributes(values, policy)
 }
 
 // Link attaches correlation attributes to a telemetry-owned SpanContext. The
 // supplied trace and span IDs are neither derived from nor replaced by IDs.
+// It forwards adapters/otel validation and error precedence, creating no span.
 func Link(spanContext trace.SpanContext, values correlation.Values, policy correlation.DisclosurePolicy) (trace.Link, error) {
 	return correlationotel.Link(spanContext, values, policy)
 }

@@ -8,6 +8,9 @@ import (
 	correlation "github.com/faustbrian/go-correlation"
 )
 
+// TestDeterministicStrategyVectors protects the committed package-specific HMAC
+// transcript and prefix/truncation bytes. These are compatibility vectors, not
+// an externally sourced cryptographic or protocol conformance corpus.
 func TestDeterministicStrategyVectors(t *testing.T) {
 	data, err := os.ReadFile("testdata/deterministic_vectors.json")
 	if err != nil {
