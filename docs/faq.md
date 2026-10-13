@@ -1,5 +1,7 @@
 # FAQ
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 ## Is a correlation ID a trace ID?
 
 No. A workflow can span traces, and one trace can contain work from multiple
@@ -21,3 +23,6 @@ their immediate cause.
 Preservation is disabled unless the immediate transport peer is explicitly
 trusted. Malformed input is also replaced or rejected according to adapter
 policy.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

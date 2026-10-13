@@ -1,5 +1,7 @@
 # Generation
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 The zero-option factory creates canonical UUIDv4 values through
 `go-identifier/v2/uuid`. Each factory owns a bounded buffer over
 `crypto/rand.Reader` so concurrent request identity generation amortizes
@@ -31,3 +33,6 @@ for the call. The checked-in vectors detect changes to this contract.
 An unkeyed strategy is suitable only for public, high-entropy inputs. It makes
 small input spaces enumerable and workflows linkable, so it is never a
 default and must not feed metrics.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

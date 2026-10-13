@@ -1,5 +1,7 @@
 # Adapters
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 New integrations use the target-oriented `adapters/http`, `adapters/jsonrpc`,
 `adapters/queue`, `adapters/schedule`, `adapters/slog`, and `adapters/otel`
 packages. The former top-level paths remain deprecated compatibility
@@ -22,3 +24,6 @@ boundary. The request ID bridge accepts a
 bound lookup function; pass a closure around
 `requestid.FromContext(ctx, requestid.Request)` after the middleware source is
 explicitly trusted.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

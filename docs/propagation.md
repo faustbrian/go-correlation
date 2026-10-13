@@ -1,5 +1,7 @@
 # Propagation matrix
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 | Boundary | Correlation | New request | Causation |
 | --- | --- | --- | --- |
 | New workflow | generated | generated | empty |
@@ -15,3 +17,6 @@
 Context propagation uses a private key and derived contexts. Carriers are
 explicit interfaces; there is no package-global current request, goroutine
 local storage, or hidden middleware installation.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

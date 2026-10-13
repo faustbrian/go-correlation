@@ -1,5 +1,7 @@
 # Trust and precedence
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Extraction validates syntax but assigns no trust. `InboundPolicy` separately
 allows correlation preservation and conversion of an inbound request ID into
 causation. Request IDs are never preserved because every hop and every retry
@@ -13,3 +15,6 @@ the metadata boundary.
 Conflicting duplicate values fail before precedence is considered. Malformed
 trusted values fail; malformed HTTP values can be rejected or replaced as an
 explicit policy. Injection never overwrites a populated carrier field.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

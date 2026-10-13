@@ -1,5 +1,7 @@
 # Compatibility
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 The stable root module is installed as
 `github.com/faustbrian/go-correlation@v1`; root releases use `vX.Y.Z` tags.
 The module minimum remains Go 1.27.0; development and CI use Go 1.27.2.
@@ -29,3 +31,6 @@ requires a separately authorized major release.
 
 See the repository-wide [compatibility policy](../COMPATIBILITY.md) for the
 stable-v1 contract and [changelog](../CHANGELOG.md) for release chronology.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

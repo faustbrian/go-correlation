@@ -1,5 +1,7 @@
 # Semantics
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Correlation answers “which logical workflow?”, request answers “which exact
 hop or attempt?”, and causation answers “which immediate parent produced this
 hop?”. `Factory.Next` preserves only correlation, generates a request ID, and
@@ -10,3 +12,6 @@ relevant fields.
 An external identifier also records its kind, source, and trust. It is never
 promoted to correlation implicitly. Correlation metadata must not control
 identity, access, tenancy, billing, replay detection, or deduplication.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

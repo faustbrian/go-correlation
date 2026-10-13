@@ -1,5 +1,7 @@
 # Migration from Cline Correlation
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Inventory the old middleware, header names, context accessors, logger fields,
 queue metadata, and any business decisions made from correlation values.
 Remove business decisions first; this package intentionally has no equivalent
@@ -43,3 +45,6 @@ remain the released identities, so those imports can migrate one boundary at a
 time without value conversion. The legacy paths remain supported for the
 longer of 180 days after public successor availability and two subsequently
 published stable minor releases.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

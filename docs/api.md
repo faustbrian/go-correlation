@@ -1,5 +1,7 @@
 # API guide
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Use `NewFactory` and `Create` for a workflow, `Next` for an outbound child, and
 `Accept` for an inbound boundary. `Factory.Start` remains a compatibility alias
 for `Create`. Use `NewCodec` only for custom carriers;
@@ -21,3 +23,6 @@ Use `NewDeterministic` only after a privacy review. Use `Disclose` indirectly
 through the log and telemetry packages unless implementing another bounded
 observability adapter. The generated [API baseline](../api/baseline.txt) is the
 authoritative exported-symbol inventory.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

@@ -1,5 +1,7 @@
 # Operations
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Monitor malformed and conflicting carrier rejections by bounded reason code,
 not identifier value. A sudden rise usually indicates a proxy combining
 headers, an adapter mismatch, or hostile input. Treat generator failures as
@@ -44,3 +46,6 @@ documented repository environment. They are engineering evidence, not an
 application latency service-level objective.
 
 For symptom-driven diagnosis, see [troubleshooting](troubleshooting.md).
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

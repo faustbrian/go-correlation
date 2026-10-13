@@ -1,5 +1,7 @@
 # Troubleshooting
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 ## A trusted inbound correlation ID was replaced
 
 Confirm that the immediate peer passed the adapter's explicit trust check and
@@ -52,3 +54,6 @@ For reproducible non-security defects, collect a minimal reproduction and
 non-secret diagnostics as described in the [support guide](../SUPPORT.md).
 Consult the [FAQ](faq.md) for adoption questions and follow the
 [security policy](../SECURITY.md) for private vulnerability reports.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

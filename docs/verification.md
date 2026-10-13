@@ -1,5 +1,7 @@
 # Verification
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 Ordinary `make check` and `make ci` use `golib check --local --all`, including
 the bounded count-1 root race test for default factory uniqueness and context
 identity. `make check-full` runs `golib check --all` for full configured assurance.
@@ -31,3 +33,6 @@ dependencies.
 
 NilAway is advisory during full checks; its diagnostics do not fail the gate.
 Ordinary hosted local-mode checks do not run it.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.

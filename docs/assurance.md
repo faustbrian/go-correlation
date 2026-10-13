@@ -1,5 +1,7 @@
 # Assurance
 
+[Documentation index](README.md) · [Repository entry](../README.md)
+
 The release gate maps the security contract to executable evidence rather than
 using statement coverage as a substitute for behavior.
 
@@ -17,3 +19,6 @@ using statement coverage as a substitute for behavior.
 `golib check --all` runs the ordinary suite, race detector, exact production
 coverage gate, fuzz targets, mutation suite, benchmarks, sibling integration,
 documentation and API checks, linters, vulnerability analysis, and NilAway.
+
+Choose the next guide in the [documentation index](README.md)
+or return to the [repository entry](../README.md) for installation and ownership.
