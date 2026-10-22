@@ -12,6 +12,12 @@ versioning once released.
   nil/zero behavior, deterministic key/truncation limits and compatibility
   alias identity without changing propagation or the public API.
 
+## 1.1.4 - 2026-10-22
+
+### Changed
+
+- Publish the current source and documentation with a fresh immutable tag.
+
 ## 1.1.3 - 2026-10-08
 
 ### Changed
